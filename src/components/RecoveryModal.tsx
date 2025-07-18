@@ -153,8 +153,8 @@ const RecoveryModal: React.FC<RecoveryModalProps> = ({ isOpen, onClose, onRecove
             <p className="font-medium mb-2">Where to find backup files:</p>
             <ul className="space-y-1 ml-4">
               <li>• Check your Downloads folder</li>
-              <li>• Look for files starting with "golden-price-list-backup-"</li>
-              <li>• Files are automatically created when you add/edit items</li>
+              <li>• Look for "golden-price-list-backup-latest.json"</li>
+              <li>• File is automatically updated when you add/edit items</li>
             </ul>
           </div>
         </div>

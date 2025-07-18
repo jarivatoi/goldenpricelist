@@ -15,8 +15,7 @@ class BackupManager {
   // Auto-backup after every change
   async createAutoBackup(items: PriceItem[]): Promise<void> {
     try {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-      const filename = `${BackupManager.BACKUP_PREFIX}${timestamp}${BackupManager.BACKUP_EXTENSION}`;
+      const filename = `${BackupManager.BACKUP_PREFIX}latest${BackupManager.BACKUP_EXTENSION}`;
       
       const backupData = {
         version: '1.0',
@@ -44,7 +43,7 @@ class BackupManager {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      console.log(`Auto-backup created: ${filename}`);
+      console.log(`Auto-backup updated: ${filename}`);
     } catch (error) {
       console.error('Failed to create auto-backup:', error);
     }
