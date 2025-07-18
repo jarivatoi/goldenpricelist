@@ -9,16 +9,16 @@ import ErrorMessage from './ErrorMessage';
 import { PriceItem } from '../types';
 
 const PriceList: React.FC = () => {
-  const { items, categories, selectedCategoryId, updateItem, deleteItem, searchItems, searchQuery, sortOption, isLoading, error } = usePriceList();
+  const { items, categories, selectedCategoryId, updateItem, deleteItem, searchItems, searchQuery, isLoading, error } = usePriceList();
   const [editingItem, setEditingItem] = useState<PriceItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<PriceItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  // Get filtered and sorted items
+  // Get items filtered by category and search
   const getFilteredItems = () => {
     let filtered = items;
     
-    // Filter by selected category first
+    // Filter by selected category
     if (selectedCategoryId) {
       filtered = filtered.filter(item => item.categoryId === selectedCategoryId);
     }
@@ -31,30 +31,7 @@ const PriceList: React.FC = () => {
       );
     }
     
-    // Apply sorting
-    return sortItems(filtered, sortOption);
-  };
-  
-  // Sort items function
-  const sortItems = (itemsToSort: PriceItem[], option: typeof sortOption) => {
-    const itemsCopy = [...itemsToSort];
-    
-    switch (option) {
-      case 'name-asc':
-        return itemsCopy.sort((a, b) => a.name.localeCompare(b.name));
-      case 'name-desc':
-        return itemsCopy.sort((a, b) => b.name.localeCompare(a.name));
-      case 'price-asc':
-        return itemsCopy.sort((a, b) => a.price - b.price);
-      case 'price-desc':
-        return itemsCopy.sort((a, b) => b.price - a.price);
-      case 'date-asc':
-        return itemsCopy.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      case 'date-desc':
-        return itemsCopy.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      default:
-        return itemsCopy;
-    }
+    return filtered;
   };
   
   const filteredItems = getFilteredItems();
