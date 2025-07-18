@@ -9,41 +9,20 @@ import ErrorMessage from './ErrorMessage';
 import { PriceItem } from '../types';
 
 const PriceList: React.FC = () => {
-  const { items, categories, selectedCategoryId, updateItem, deleteItem, searchItems, searchQuery, isLoading, error } = usePriceList();
+  const { items, updateItem, deleteItem, searchItems, searchQuery, isLoading, error } = usePriceList();
   const [editingItem, setEditingItem] = useState<PriceItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<PriceItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  // Get items filtered by category and search
-  const getFilteredItems = () => {
-    let filtered = items;
-    
-    // Filter by selected category
-    if (selectedCategoryId) {
-      filtered = filtered.filter(item => item.categoryId === selectedCategoryId);
-    }
-    
-    // Apply search if there's a query
-    if (searchQuery.trim()) {
-      const lowerCaseQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(lowerCaseQuery)
-      );
-    }
-    
-    return filtered;
-  };
-  
-  const filteredItems = getFilteredItems();
-  const selectedCategory = selectedCategoryId ? categories.find(cat => cat.id === selectedCategoryId) : null;
+  const filteredItems = searchItems(searchQuery);
   
   const handleEdit = (item: PriceItem) => {
     setEditingItem(item);
   };
   
-  const handleSave = async (id: string, name: string, price: number, categoryId?: string) => {
+  const handleSave = async (id: string, name: string, price: number) => {
     try {
-      await updateItem(id, name, price, categoryId);
+      await updateItem(id, name, price);
       setEditingItem(null);
     } catch (err) {
       // Error is handled in context
@@ -121,34 +100,11 @@ const PriceList: React.FC = () => {
         {filteredItems.length === 0 && (
           searchQuery ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">
-                No items found matching "{searchQuery}"
-                {selectedCategory && ` in ${selectedCategory.name}`}
-              </p>
-            </div>
-          ) : selectedCategory ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No items in {selectedCategory.name} category</p>
-              <p className="text-gray-400 text-sm mt-1">Add items to this category to see them here</p>
+              <p className="text-gray-500">No items found matching "{searchQuery}"</p>
             </div>
           ) : (
             <EmptyState />
           )
-        )}
-        
-        {/* Show category header if filtering by category */}
-        {selectedCategory && filteredItems.length > 0 && (
-          <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: `${selectedCategory.color}10` }}>
-            <div className="flex items-center gap-2">
-              <div 
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: selectedCategory.color }}
-              />
-              <span className="font-medium text-gray-800">
-                {selectedCategory.name} ({filteredItems.length} items)
-              </span>
-            </div>
-          </div>
         )}
         
         {filteredItems.map((item) => (

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import { PriceItem } from '../types';
-import { usePriceList } from '../context/PriceListContext';
 
 interface SwipeableItemProps {
   item: PriceItem;
@@ -10,7 +9,6 @@ interface SwipeableItemProps {
 }
 
 const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete }) => {
-  const { categories } = usePriceList();
   const [revealWidth, setRevealWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
@@ -36,9 +34,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   const formattedDate = formatDate(item.createdAt);
   const isEdited = !!item.lastEditedAt;
   const formattedEditDate = item.lastEditedAt ? formatDate(item.lastEditedAt) : '';
-
-  // Find category for this item
-  const itemCategory = item.categoryId ? categories.find(cat => cat.id === item.categoryId) : null;
 
   // Reset position
   const resetPosition = () => {
@@ -200,14 +195,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           <div className="flex-1 pr-4">
             <div className="font-medium text-gray-800 truncate mb-1">
               {item.name}
-              {itemCategory && (
-                <span 
-                  className="ml-2 px-2 py-0.5 text-xs rounded-full text-white"
-                  style={{ backgroundColor: itemCategory.color }}
-                >
-                  {itemCategory.name}
-                </span>
-              )}
             </div>
             <div className="text-xs text-gray-500">
               {isEdited ? (
