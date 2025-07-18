@@ -1,6 +1,6 @@
 // IndexedDB utility functions for offline storage
 const DB_NAME = 'PriceListDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'priceItems';
 
 export interface DBPriceItem {
