@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PriceItem, SortOption } from '../types';
 import { dbManager, DBPriceItem } from '../utils/indexedDB';
-import { backupManager } from '../utils/backupManager';
 
 interface PriceListContextType {
   items: PriceItem[];
@@ -16,8 +15,6 @@ interface PriceListContextType {
   setSortOption: (option: SortOption) => void;
   isLoading: boolean;
   error: string | null;
-  showRecovery: boolean;
-  setShowRecovery: (show: boolean) => void;
 }
 
 const PriceListContext = createContext<PriceListContextType | undefined>(undefined);
@@ -64,7 +61,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [sortOption, setSortOption] = useState<SortOption>('date-desc');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showRecovery, setShowRecovery] = useState(false);
 
   // Initialize IndexedDB and load items
   useEffect(() => {
@@ -78,11 +74,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         const priceItems = dbItems.map(dbItemToPriceItem);
         
         setItems(priceItems);
-        
-        // Check if recovery should be shown
-        if (backupManager.shouldShowRecovery(priceItems)) {
-          setShowRecovery(true);
-        }
         
         console.log(`Loaded ${priceItems.length} items from IndexedDB`);
       } catch (err) {
@@ -128,10 +119,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       // Update local state
       setItems(prevItems => [newItem, ...prevItems]);
       
-      // Create auto-backup
-      const updatedItems = [newItem, ...items];
-      await backupManager.createAutoBackup(updatedItems);
-      
       console.log('Item added successfully:', newItem);
     } catch (err) {
       console.error('Failed to add item:', err);
@@ -169,12 +156,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         // Update in IndexedDB
         await dbManager.updateItem(priceItemToDBItem(itemToUpdate));
         
-        // Create auto-backup with updated items
-        const updatedItems = items.map(item => 
-          item.id === id ? itemToUpdate : item
-        );
-        await backupManager.createAutoBackup(updatedItems);
-        
         console.log('Item updated successfully:', itemToUpdate);
       }
     } catch (err) {
@@ -191,10 +172,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       // Update local state
       setItems(prevItems => prevItems.filter(item => item.id !== id));
-      
-      // Create auto-backup with remaining items
-      const remainingItems = items.filter(item => item.id !== id);
-      await backupManager.createAutoBackup(remainingItems);
       
       console.log('Item deleted successfully:', id);
     } catch (err) {
@@ -216,9 +193,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       // Update local state
       setItems(newItems);
-      
-      // Create auto-backup of imported items
-      await backupManager.createAutoBackup(newItems);
       
       console.log(`Successfully imported ${newItems.length} items`);
     } catch (err) {
@@ -274,9 +248,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     sortOption,
     setSortOption,
     isLoading,
-    error,
-    showRecovery,
-    setShowRecovery
+    error
   };
 
   return (
