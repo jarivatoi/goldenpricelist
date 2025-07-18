@@ -122,7 +122,7 @@ const Header: React.FC = () => {
               <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
                 <div className="flex items-center text-xs text-gray-500">
                   <Database size={12} className="mr-1" />
-                  <span>{items.length} items • Auto-backup enabled</span>
+                  <span>{items.length} items</span>
                 </div>
               </div>
             </div>
