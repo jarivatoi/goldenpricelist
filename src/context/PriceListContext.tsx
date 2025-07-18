@@ -328,7 +328,14 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const searchItems = (query: string) => {
-    if (!query.trim()) return sortItems(items, sortOption);
+    if (!query.trim()) {
+      // If no search query, return items filtered by category and sorted
+      let filtered = items;
+      if (selectedCategoryId) {
+        filtered = filtered.filter(item => item.categoryId === selectedCategoryId);
+      }
+      return sortItems(filtered, sortOption);
+    }
     
     const lowerCaseQuery = query.toLowerCase();
     let filteredItems = items;
@@ -344,12 +351,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     );
     
     return sortItems(filteredItems, sortOption);
-  };
-
-  // Get filtered items by category
-  const getFilteredItems = () => {
-    if (!selectedCategoryId) return items;
-    return items.filter(item => item.categoryId === selectedCategoryId);
   };
 
   const sortItems = (itemsToSort: PriceItem[], option: SortOption) => {
