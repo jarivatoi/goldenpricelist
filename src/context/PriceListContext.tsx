@@ -274,7 +274,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     sortOption,
     setSortOption,
     isLoading,
-    error
+    error,
     showRecovery,
     setShowRecovery
   };
