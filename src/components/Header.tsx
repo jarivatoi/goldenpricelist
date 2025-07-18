@@ -4,7 +4,7 @@ import { usePriceList } from '../context/PriceListContext';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { items, importItems } = usePriceList();
+  const { items, categories, importItems } = usePriceList();
 
   const handleExport = () => {
     try {
@@ -15,6 +15,10 @@ const Header: React.FC = () => {
           ...item,
           createdAt: item.createdAt.toISOString(),
           lastEditedAt: item.lastEditedAt?.toISOString()
+        })),
+        categories: categories.map(category => ({
+          ...category,
+          createdAt: category.createdAt.toISOString()
         }))
       };
 
@@ -52,7 +56,7 @@ const Header: React.FC = () => {
           const data = JSON.parse(content);
           
           // Validate the data structure
-          if (!data.items || !Array.isArray(data.items)) {
+          if (!data.items || !Array.isArray(data.items) || !data.categories || !Array.isArray(data.categories)) {
             throw new Error('Invalid file format');
           }
 
@@ -63,14 +67,19 @@ const Header: React.FC = () => {
             lastEditedAt: item.lastEditedAt ? new Date(item.lastEditedAt) : undefined
           }));
 
+          const importedCategories = data.categories.map((category: any) => ({
+            ...category,
+            createdAt: new Date(category.createdAt)
+          }));
+
           // Confirm import
           const confirmImport = window.confirm(
-            `This will import ${importedItems.length} items and replace your current data. Are you sure you want to continue?`
+            `This will import ${importedItems.length} items and ${importedCategories.length} categories and replace your current data. Are you sure you want to continue?`
           );
 
           if (confirmImport) {
-            await importItems(importedItems);
-            alert(`Successfully imported ${importedItems.length} items!`);
+            await importItems(importedItems, importedCategories);
+            alert(`Successfully imported ${importedItems.length} items and ${importedCategories.length} categories!`);
           }
         } catch (error) {
           alert('Error importing file. Please check the file format and try again.');
@@ -122,7 +131,7 @@ const Header: React.FC = () => {
               <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
                 <div className="flex items-center text-xs text-gray-500">
                   <Database size={12} className="mr-1" />
-                  <span>{items.length} items stored locally</span>
+                  <span>{items.length} items, {categories.length} categories stored locally</span>
                 </div>
               </div>
             </div>

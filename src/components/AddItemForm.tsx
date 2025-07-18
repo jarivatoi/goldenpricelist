@@ -3,12 +3,20 @@ import { Plus } from 'lucide-react';
 import { usePriceList } from '../context/PriceListContext';
 
 const AddItemForm: React.FC = () => {
-  const { addItem } = usePriceList();
+  const { addItem, categories, selectedCategoryId } = usePriceList();
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const [categoryId, setCategoryId] = useState<string>('');
   const [error, setError] = useState('');
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Set default category when form opens
+  React.useEffect(() => {
+    if (isFormVisible && selectedCategoryId) {
+      setCategoryId(selectedCategoryId);
+    }
+  }, [isFormVisible, selectedCategoryId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,11 +37,12 @@ const AddItemForm: React.FC = () => {
       setError('');
       
       // Add the item with price rounded to 2 decimal places
-      await addItem(name.trim(), Math.round(priceValue * 100) / 100);
+      await addItem(name.trim(), Math.round(priceValue * 100) / 100, categoryId || undefined);
       
       // Reset form
       setName('');
       setPrice('');
+      setCategoryId('');
       setIsFormVisible(false);
     } catch (err) {
       setError('Failed to add item. Please try again.');
@@ -87,6 +96,26 @@ const AddItemForm: React.FC = () => {
               />
             </div>
             
+            <div className="mb-3">
+              <label htmlFor="itemCategory" className="block text-sm font-medium text-gray-700 mb-1">
+                Category (Optional)
+              </label>
+              <select
+                id="itemCategory"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                disabled={isSubmitting}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option value="">No Category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
             {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
             
             <div className="flex gap-2">
@@ -103,6 +132,7 @@ const AddItemForm: React.FC = () => {
                   setIsFormVisible(false);
                   setName('');
                   setPrice('');
+                  setCategoryId('');
                   setError('');
                 }}
                 disabled={isSubmitting}

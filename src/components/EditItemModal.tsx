@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { PriceItem } from '../types';
+import { usePriceList } from '../context/PriceListContext';
 
 interface EditItemModalProps {
   item: PriceItem | null;
   onClose: () => void;
-  onSave: (id: string, name: string, price: number) => Promise<void>;
+  onSave: (id: string, name: string, price: number, categoryId?: string) => Promise<void>;
 }
 
 const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) => {
+  const { categories } = usePriceList();
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const [categoryId, setCategoryId] = useState<string>('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -18,6 +21,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) 
     if (item) {
       setName(item.name);
       setPrice(item.price.toString());
+      setCategoryId(item.categoryId || '');
     }
   }, [item]);
 
@@ -42,7 +46,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) 
       setError('');
       
       // Save with price rounded to 2 decimal places
-      await onSave(item.id, name.trim(), Math.round(priceValue * 100) / 100);
+      await onSave(item.id, name.trim(), Math.round(priceValue * 100) / 100, categoryId || undefined);
     } catch (err) {
       setError('Failed to update item. Please try again.');
     } finally {
@@ -93,6 +97,26 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) 
               disabled={isSubmitting}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="editItemCategory" className="block text-sm font-medium text-gray-700 mb-1">
+              Category (Optional)
+            </label>
+            <select
+              id="editItemCategory"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              disabled={isSubmitting}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              <option value="">No Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
           
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
