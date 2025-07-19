@@ -10,6 +10,7 @@ const AddToHomeScreen: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
     // Check if app is already installed
@@ -20,6 +21,13 @@ const AddToHomeScreen: React.FC = () => {
       setIsInstalled(true);
       return;
     }
+
+    // For testing - show prompt after delay even without beforeinstallprompt
+    const testTimer = setTimeout(() => {
+      if (!deferredPrompt && !isInstalled) {
+        setCanInstall(true);
+      }
+    }, 2000);
 
     // Check if user has already dismissed the prompt
     const hasSeenPrompt = localStorage.getItem('pwa-prompt-dismissed');
@@ -32,10 +40,7 @@ const AddToHomeScreen: React.FC = () => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       
-      // Show our custom prompt after a short delay
-      setTimeout(() => {
-        setShowPrompt(true);
-      }, 3000); // Show after 3 seconds
+      setCanInstall(true);
     };
 
     // Listen for app installed event
@@ -48,14 +53,28 @@ const AddToHomeScreen: React.FC = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
+    // Show prompt after delay if conditions are met
+    const promptTimer = setTimeout(() => {
+      if (canInstall && !hasSeenPrompt && !isInstalled) {
+        setShowPrompt(true);
+      }
+    }, 3000);
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      clearTimeout(testTimer);
+      clearTimeout(promptTimer);
     };
-  }, []);
+  }, [canInstall, isInstalled]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      // Fallback for browsers that don't support beforeinstallprompt
+      alert('To install this app:\n\n1. Tap the share button in your browser\n2. Select "Add to Home Screen"\n3. Tap "Add"');
+      handleDismiss();
+      return;
+    }
 
     try {
       await deferredPrompt.prompt();
@@ -80,7 +99,7 @@ const AddToHomeScreen: React.FC = () => {
   };
 
   // Don't show if already installed or no prompt available
-  if (isInstalled || !showPrompt || !deferredPrompt) {
+  if (isInstalled || !showPrompt) {
     return null;
   }
 
