@@ -4,6 +4,7 @@ import AddItemForm from './components/AddItemForm';
 import PriceList from './components/PriceList';
 import SearchBar from './components/SearchBar';
 import { PriceListProvider } from './context/PriceListContext';
+import AddToHomeScreen from './components/AddToHomeScreen';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <AddItemForm />
         <PriceList />
         <SearchBar />
+        <AddToHomeScreen />
       </div>
     </PriceListProvider>
   );
