@@ -7,9 +7,26 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Price List" />
+    <link rel="manifest" href="/goldenpricelist/manifest.json" />
+    <link rel="apple-touch-icon" href="/goldenpricelist/icon-192.png" />
     <title>Price List App</title>
-    <script type="module" crossorigin src="/goldenpricelist/assets/index-D7dfAdRE.js"></script>
-    <link rel="stylesheet" crossorigin href="/goldenpricelist/assets/index-CnYsphCD.css">
+    <script>
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+    <script type="module" crossorigin src="/goldenpricelist/assets/index-C4gd_1lA.js"></script>
+    <link rel="stylesheet" crossorigin href="/goldenpricelist/assets/index-B5R3NrXT.css">
   </head>
   <body>
     <div id="root"></div>
