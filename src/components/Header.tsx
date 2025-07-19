@@ -8,6 +8,13 @@ const Header: React.FC = () => {
 
   const handleExport = () => {
     try {
+      // Create date string in dd-mm-yyyy format
+      const now = new Date();
+      const day = now.getDate().toString().padStart(2, '0');
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const year = now.getFullYear();
+      const dateString = `${day}-${month}-${year}`;
+      
       const dataToExport = {
         version: '1.0',
         exportDate: new Date().toISOString(),
@@ -24,7 +31,7 @@ const Header: React.FC = () => {
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'Golden Pricelist.json';
+      link.download = `Goldenpricelist_${dateString}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
