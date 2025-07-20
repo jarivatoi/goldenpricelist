@@ -71,24 +71,11 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
       }
     }
     
-    const deltaX = dragStartX - clientX;
+    const deltaX = dragStartX - clientX; // Reversed for left swipe
     
-    // If buttons are already revealed, allow swiping back to close
-    if (revealWidth === 150) {
-      // When fully open, allow swiping right to close
-      if (deltaX < 0) {
-        // Swiping right (negative deltaX) should close
-        const newWidth = Math.max(0, 150 + deltaX);
-        setRevealWidth(newWidth);
-      } else {
-        // Keep at full width if swiping left more
-        setRevealWidth(150);
-      }
-    } else {
-      // Normal behavior: only allow positive values (revealing actions) and limit to 150px
-      if (deltaX >= 0) {
-        setRevealWidth(Math.min(deltaX, 150));
-      }
+    // Only allow positive values (revealing actions) and limit to 150px
+    if (deltaX >= 0) {
+      setRevealWidth(Math.min(deltaX, 150));
     }
   };
 
@@ -96,11 +83,11 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   const handleDragEnd = () => {
     setIsDragging(false);
     
-    // Snap to positions based on current state
-    if (revealWidth >= 75) {  // More than halfway open
-      setRevealWidth(150); // Snap to full reveal
+    // Snap to positions
+    if (revealWidth >= 25) {  // Much lower threshold - any meaningful swipe
+      setRevealWidth(150); // Full reveal (delete zone)
     } else {
-      setRevealWidth(0);   // Snap to closed
+      setRevealWidth(0);   // Reset position
     }
   };
 
