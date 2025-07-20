@@ -83,17 +83,17 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 
   // Touch events
   const handleTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault();
     handleDragStart(e.touches[0].clientX);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault();
+    if (isDragging) {
+      e.preventDefault(); // Only prevent default when actively dragging
+    }
     handleDragMove(e.touches[0].clientX);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    e.preventDefault();
     handleDragEnd();
   };
 
@@ -207,6 +207,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             width: `calc(100% - ${formattedPrice.length * 8 + 16}px)`, // Leave space for price
             userSelect: 'none',
             WebkitUserSelect: 'none',
+            touchAction: 'pan-y', // Allow vertical scrolling, prevent horizontal
             backgroundColor: '#fefce8', // Pale golden background
             zIndex: 5,
           }}
