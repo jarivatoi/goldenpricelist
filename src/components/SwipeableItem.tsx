@@ -504,6 +504,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           style={{ 
             // Dynamic width based on price text length
             width: `${formattedPrice.length * 8 + 16}px`,
+            fontSize: '16px',
             zIndex: 8,
             // Move left as buttons are revealed
             transform: `translateX(-${revealWidth}px)`,
@@ -548,6 +549,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
               ref={itemTextRef}
               className="font-medium text-gray-800 truncate"
               style={{ 
+                fontSize: '16px',
                 zIndex: 2,
                 maxWidth: '100%'
               }}
