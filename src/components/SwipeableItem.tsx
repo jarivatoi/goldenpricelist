@@ -172,8 +172,19 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     <>
       <div 
         ref={containerRef}
-          {/* Edit button */}
+        className="relative h-16 overflow-hidden"
       >
+        {/* Action buttons container - revealed on swipe */}
+        <div 
+          className="absolute top-0 right-0 h-full flex"
+          style={{ 
+            width: '150px',
+            transform: `translateX(${150 - revealWidth}px)`,
+            transition: (isAnimating || !isDragging) ? 'transform 0.3s ease-out' : 'none',
+            zIndex: 10
+          }}
+        >
+          {/* Edit button */}
           <button 
             className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
             onClick={handleEditClick}
