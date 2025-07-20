@@ -515,6 +515,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             WebkitUserSelect: 'none',
             // Cursor feedback based on state
             cursor: revealWidth > 0 ? 'pointer' : 'default'
+            backgroundColor: '#f9fafb', // Same as bg-gray-50
           }}
         >
           {formattedPrice}
@@ -529,7 +530,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             userSelect: 'none',
             WebkitUserSelect: 'none',
             touchAction: 'pan-y', // Allow vertical scrolling, prevent horizontal
-            backgroundColor: '#fefce8', // Pale golden background
+            backgroundColor: '#f9fafb', // Same as bg-gray-50
             zIndex: 5,
           }}
           // Touch event handlers for swipe interaction
