@@ -707,5 +707,3 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     </PriceListContext.Provider>
   );
 }
-/**
-};
