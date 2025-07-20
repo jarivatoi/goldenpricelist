@@ -2,7 +2,7 @@
   "name": "Golden Pricelist",
   "short_name": "Golden Pricelist",
   "description": "A beautiful price list management app",
-  "start_url": "/?v=3",
+  "start_url": "/goldenpricelist/?v=3",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
