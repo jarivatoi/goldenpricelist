@@ -529,7 +529,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             userSelect: 'none',
             WebkitUserSelect: 'none',
             touchAction: 'pan-y', // Allow vertical scrolling, prevent horizontal
-            backgroundColor: '#fefce8', // Pale golden background
             zIndex: 5,
           }}
           // Touch event handlers for swipe interaction
