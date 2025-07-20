@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, X } from 'lucide-react';
 import { PriceItem } from '../types';
 
 interface SwipeableItemProps {
@@ -12,10 +12,18 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   const [revealWidth, setRevealWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
+  const [showTextPopup, setShowTextPopup] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const itemTextRef = useRef<HTMLDivElement>(null);
   
   // Format price with Rs
   const formattedPrice = `Rs ${item.price.toFixed(2)}`;
+
+  // Check if text is truncated
+  const isTextTruncated = () => {
+    if (!itemTextRef.current) return false;
+    return itemTextRef.current.scrollWidth > itemTextRef.current.clientWidth;
+  };
 
   // Reset position
   const resetPosition = () => {
@@ -117,7 +125,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     }
   }, [isDragging, dragStartX, revealWidth]);
 
-  // Handle card click (when actions are revealed)
+  // Handle card click (when actions are revealed or text is truncated)
   const handleCardClick = () => {
     if (revealWidth >= 100) {
       onDelete(item.id);
@@ -125,6 +133,8 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     } else if (revealWidth >= 50) {
       onEdit(item);
       resetPosition();
+    } else if (isTextTruncated()) {
+      setShowTextPopup(true);
     }
   };
 
@@ -142,85 +152,121 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   };
 
   return (
-    <div 
-      ref={containerRef}
-      className="relative rounded-lg mb-3 select-none"
-      style={{ height: '60px' }}
-    >
-      {/* Action buttons - slide in from right */}
+    <>
       <div 
-        className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
-        style={{ 
-          width: '150px',
-          zIndex: 10,
-          opacity: revealWidth > 0 ? 1 : 0,
-          visibility: revealWidth > 0 ? 'visible' : 'hidden',
-          clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`,
-          transform: `translateX(${150 - revealWidth}px)`
-        }}
+        ref={containerRef}
+        className="relative rounded-lg mb-3 select-none"
+        style={{ height: '60px' }}
       >
-        {/* Edit button */}
-        <button 
-          className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
-          onClick={handleEditClick}
+        {/* Action buttons - slide in from right */}
+        <div 
+          className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
+          style={{ 
+            width: '150px',
+            zIndex: 10,
+            opacity: revealWidth > 0 ? 1 : 0,
+            visibility: revealWidth > 0 ? 'visible' : 'hidden',
+            clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`,
+            transform: `translateX(${150 - revealWidth}px)`
+          }}
         >
-          <Edit className="text-white" size={20} />
-        </button>
-        
-        {/* Delete button */}
-        <button 
-          className="w-[75px] bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
-          onClick={handleDeleteClick}
-        >
-          <Trash2 className="text-white" size={20} />
-        </button>
-      </div>
-
-      {/* Main card - stays in place with layered text */}
-      <div 
-        className="absolute top-0 left-0 h-full shadow-sm border border-gray-200 cursor-pointer rounded-lg"
-        style={{ 
-          width: '100%',
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          backgroundColor: '#fefce8', // Pale golden background
-          zIndex: 5
-        }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onClick={handleCardClick}
-      >
-        {/* Content container with layered text */}
-        <div className="relative h-full flex items-center px-4 pointer-events-none">
-          {/* Price text - positioned behind item text (lower z-index) */}
-          <div 
-            className="absolute right-4 font-semibold text-gray-900 whitespace-nowrap"
-            style={{ 
-              zIndex: 1,
-              fontSize: '16px'
-            }}
+          {/* Edit button */}
+          <button 
+            className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
+            onClick={handleEditClick}
           >
-            {formattedPrice}
-          </div>
+            <Edit className="text-white" size={20} />
+          </button>
           
-          {/* Item text - positioned above price text (higher z-index) */}
-          <div 
-            className="relative font-medium text-gray-800 pr-4"
-            style={{ 
-              zIndex: 2,
-              fontSize: '16px',
-              width: '100%',
-              backgroundColor: '#fefce8', // Same as card background to overlay price
-              paddingRight: '16px'
-            }}
+          {/* Delete button */}
+          <button 
+            className="w-[75px] bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
+            onClick={handleDeleteClick}
           >
-            {item.name}
+            <Trash2 className="text-white" size={20} />
+          </button>
+        </div>
+
+        {/* Main card - stays in place */}
+        <div 
+          className="absolute top-0 left-0 h-full shadow-sm border border-gray-200 cursor-pointer rounded-lg"
+          style={{ 
+            width: '100%',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            backgroundColor: '#fefce8', // Pale golden background
+            zIndex: 5
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onClick={handleCardClick}
+        >
+          {/* Content container with proper layout */}
+          <div className="relative h-full flex items-center px-4 pointer-events-none">
+            {/* Price text - always visible on the right */}
+            <div 
+              className="absolute right-4 font-semibold text-gray-900 whitespace-nowrap"
+              style={{ 
+                fontSize: '16px',
+                zIndex: 3 // Highest z-index to always be visible
+              }}
+            >
+              {formattedPrice}
+            </div>
+            
+            {/* Item text - truncated to not overlap price */}
+            <div 
+              ref={itemTextRef}
+              className="font-medium text-gray-800 truncate"
+              style={{ 
+                fontSize: '16px',
+                zIndex: 2,
+                paddingRight: `${formattedPrice.length * 8 + 16}px`, // Dynamic padding based on price length
+                maxWidth: '100%'
+              }}
+            >
+              {item.name}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Text popup modal */}
+      {showTextPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm overflow-hidden animate-fade-in">
+            <div className="p-4">
+              {/* Header with close button */}
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="text-lg font-semibold text-gray-900">Item Details</h3>
+                <button 
+                  onClick={() => setShowTextPopup(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              {/* Full item text */}
+              <div className="mb-3">
+                <p className="text-gray-800 font-medium leading-relaxed">
+                  {item.name}
+                </p>
+              </div>
+              
+              {/* Price */}
+              <div className="text-right">
+                <span className="text-lg font-semibold text-gray-900">
+                  {formattedPrice}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
