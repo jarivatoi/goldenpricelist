@@ -696,5 +696,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       {children}
     </PriceListContext.Provider>
   );
+}
 /**
 };
