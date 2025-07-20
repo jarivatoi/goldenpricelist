@@ -515,6 +515,8 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             WebkitUserSelect: 'none',
             // Cursor feedback based on state
             cursor: revealWidth > 0 ? 'pointer' : 'default'
+            // Background color to prevent overlap with item text
+            backgroundColor: '#f9fafb'
           }}
         >
           {formattedPrice}
