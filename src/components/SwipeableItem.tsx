@@ -522,7 +522,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 
         {/* Main Card: Stays in place, contains item name */}
         <div 
-          className="absolute top-0 left-0 h-full shadow-sm border border-gray-200 cursor-pointer rounded-lg"
+          className="absolute top-0 left-0 h-full"
           style={{
             width: `calc(100% - ${formattedPrice.length * 8 + 16}px)`, // Leave space for price
             // Prevent text selection during swipe
@@ -542,15 +542,18 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           onClick={handleCardClick}
         >
           {/* Content Container: Proper padding and layout */}
-          <div className="relative h-full flex items-center px-4 pointer-events-none">
+          <div className="relative h-full flex items-center pointer-events-none">
             {/* Item Text: Truncated with ellipsis, clickable if truncated */}
             <div 
               ref={itemTextRef}
-              className="truncate"
+              className=""
               style={{ 
                 fontSize: '16px',
                 zIndex: 2,
-                maxWidth: '100%'
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}
             >
               {item.name}
