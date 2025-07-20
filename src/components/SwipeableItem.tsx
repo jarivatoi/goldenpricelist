@@ -13,6 +13,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
   const [showTextPopup, setShowTextPopup] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const itemTextRef = useRef<HTMLDivElement>(null);
   
@@ -27,6 +28,11 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 
   // Reset position
   const resetPosition = () => {
+    if (revealWidth > 0) {
+      setIsAnimating(true);
+      // Allow animation to complete before clearing animating state
+      setTimeout(() => setIsAnimating(false), 300);
+    }
     setRevealWidth(0);
   };
 
@@ -85,9 +91,13 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     
     // Snap to positions
     if (revealWidth >= 25) {  // Much lower threshold - any meaningful swipe
+      setIsAnimating(true);
       setRevealWidth(150); // Full reveal (delete zone)
+      setTimeout(() => setIsAnimating(false), 300);
     } else {
+      setIsAnimating(true);
       setRevealWidth(0);   // Reset position
+      setTimeout(() => setIsAnimating(false), 300);
     }
   };
 
@@ -162,21 +172,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     <>
       <div 
         ref={containerRef}
-        className="relative rounded-lg mb-3 select-none"
-        style={{ height: '60px' }}
-      >
-        {/* Action buttons - slide in from right */}
-        <div
-          className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
-          style={{ 
-            width: `150px`, // Only buttons width
-            zIndex: 10,
-            opacity: revealWidth > 0 ? 1 : 0,
-            visibility: revealWidth > 0 ? 'visible' : 'hidden',
-            clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`,
-            transform: `translateX(${150 - revealWidth}px)`
-          }}
-        >
           {/* Edit button */}
           <button 
             className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
@@ -201,7 +196,24 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             width: `${formattedPrice.length * 8 + 16}px`,
             fontSize: '16px',
             zIndex: 8,
-            transform: `translateX(-${revealWidth}px)` // Move left as buttons are revealed
+            transform: `translateX(-${revealWidth}px)`,
+            transition: (isAnimating || !isDragging) ? 'transform 0.3s ease-out' : 'none'
+          }}
+        >
+          {formattedPrice}
+        </div>
+
+        {/* Action buttons - slide in from right */}
+        <div
+          className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
+          style={{ 
+            width: `150px`, // Only buttons width
+            zIndex: 10,
+            opacity: revealWidth > 0 ? 1 : 0,
+            visibility: revealWidth > 0 ? 'visible' : 'hidden',
+            clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`,
+            transform: `translateX(${150 - revealWidth}px)`,
+            transition: (isAnimating || !isDragging) ? 'all 0.3s ease-out' : 'none'
           }}
         >
           {formattedPrice}
