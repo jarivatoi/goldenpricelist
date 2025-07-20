@@ -284,7 +284,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         </div>
       )}
     </>
-  )
   );
 };
 
