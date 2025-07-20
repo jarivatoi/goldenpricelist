@@ -514,7 +514,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             userSelect: 'none',
             WebkitUserSelect: 'none',
             // Cursor feedback based on state
-            cursor: revealWidth > 0 ? 'pointer' : 'default'
+            cursor: revealWidth > 0 ? 'pointer' : 'default',
             backgroundColor: '#f9fafb', // Same as bg-gray-50
           }}
         >
