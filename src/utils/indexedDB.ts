@@ -1,3 +1,4 @@
+/*
  * UTILS/INDEXEDDB.TS - OFFLINE DATABASE MANAGEMENT
  * ================================================
  * 

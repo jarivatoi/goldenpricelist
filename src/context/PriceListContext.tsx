@@ -1,3 +1,4 @@
+/*
  * CONTEXT/PRICELISTCONTEXT.TSX - GLOBAL STATE MANAGEMENT
  * ======================================================
  * 

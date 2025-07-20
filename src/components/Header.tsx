@@ -1,3 +1,4 @@
+/*
  * COMPONENTS/HEADER.TSX - APPLICATION HEADER COMPONENT
  * ====================================================
  * 
