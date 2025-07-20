@@ -253,8 +253,8 @@ const Header: React.FC = () => {
    * - Readable text sizes across devices
    */
   return (
-    {/* Sticky Header: Stays at top during scroll */}
     <header className="sticky top-0 bg-white z-20 shadow-sm">
+      {/* Sticky Header: Stays at top during scroll */}
       <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-center relative">
         {/* Centered Title: Main app branding */}
         <h1 className="text-xl font-semibold text-gray-900">Golden Price List</h1>

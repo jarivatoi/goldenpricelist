@@ -247,5 +247,4 @@ const AddItemForm: React.FC = () => {
   );
 };
 
-/**
 export default AddItemForm;
