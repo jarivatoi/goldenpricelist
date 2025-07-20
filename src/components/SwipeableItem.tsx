@@ -195,7 +195,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             userSelect: 'none',
             WebkitUserSelect: 'none',
             backgroundColor: '#fefce8', // Pale golden background
-            zIndex: 5
+            zIndex: 5,
             transform: `translateX(-${revealWidth}px)`, // Move card left as buttons are revealed
           }}
           onTouchStart={handleTouchStart}
