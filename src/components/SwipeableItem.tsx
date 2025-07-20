@@ -547,7 +547,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             {/* Item Text: Truncated with ellipsis, clickable if truncated */}
             <div 
               ref={itemTextRef}
-              className="font-medium text-gray-800 truncate"
+              className="font-semibold text-gray-900 truncate"
               style={{ 
                 fontSize: '16px',
                 zIndex: 2,
