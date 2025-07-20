@@ -56,8 +56,20 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   };
 
   // Handle drag move (both mouse and touch)
-  const handleDragMove = (clientX: number) => {
+  const handleDragMove = (clientX: number, clientY: number) => {
     if (!isDragging) return;
+    
+    // Check if touch/mouse is still within the item bounds
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const isWithinBounds = clientY >= rect.top && clientY <= rect.bottom;
+      
+      // If dragging outside the item vertically, stop the drag
+      if (!isWithinBounds) {
+        handleDragEnd();
+        return;
+      }
+    }
     
     const deltaX = dragStartX - clientX; // Reversed for left swipe
     
@@ -90,7 +102,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     if (isDragging) {
       e.preventDefault(); // Only prevent default when actively dragging
     }
-    handleDragMove(e.touches[0].clientX);
+    handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -107,7 +119,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   // Global mouse events
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      handleDragMove(e.clientX);
+      handleDragMove(e.clientX, e.clientY);
     };
 
     const handleMouseUp = () => {
