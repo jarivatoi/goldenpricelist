@@ -72,6 +72,13 @@ interface PriceListContextType {
 }
 
 /**
+ * EXPORT STATEMENT
+ * ================
+ * 
+ * PURPOSE:
+ * Exports the PriceListProvider component for use in the application.
+ * This provider should wrap the entire app to provide global state access.
+ */
  * CONTEXT CREATION
  * ================
  * 

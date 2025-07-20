@@ -597,4 +597,11 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 };
 
 /**
+ * EXPORT STATEMENT
+ * ================
+ * 
+ * PURPOSE:
+ * Exports the SwipeableItem component as the default export.
+ * Allows other components to import and use this swipeable list item.
+ */
 export default SwipeableItem;

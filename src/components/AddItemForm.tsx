@@ -161,21 +161,21 @@ const AddItemForm: React.FC = () => {
    * - Screen reader friendly error messages
    */
   return (
-    {/* Sticky Container: Positioned below header */}
     <div className="bg-white border-b border-gray-200 shadow-sm sticky top-[60px] z-10">
+      {/* Sticky Container: Positioned below header */}
       <div className="max-w-md mx-auto w-full px-4 py-3">
         {!isFormVisible ? (
-          {/* Collapsed State: Show add button */}
           <button
             onClick={() => setIsFormVisible(true)}
             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg flex items-center justify-center transition-colors duration-200 shadow-sm"
           >
+            {/* Collapsed State: Show add button */}
             <Plus size={20} className="mr-2" />
             <span>Add New Item</span>
           </button>
         ) : (
-          {/* Expanded State: Show form */}
           <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-4 border border-gray-200 w-full">
+            {/* Expanded State: Show form */}
             {/* Item Name Input */}
             <div className="mb-3">
               <label htmlFor="itemName" className="block text-sm font-medium text-gray-700 mb-1">
