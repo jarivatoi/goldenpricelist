@@ -1,3 +1,4 @@
+/**
  * COMPONENTS/HEADER.TSX - APPLICATION HEADER WITH MENU
  * COMPONENTS/HEADER.TSX - APPLICATION HEADER WITH MENU
  * ====================================================
