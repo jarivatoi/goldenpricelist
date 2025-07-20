@@ -16,24 +16,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   
   // Format price with Rs
   const formattedPrice = `Rs ${item.price.toFixed(2)}`;
-  
-  // Format date as dd-mmm-yyyy
-  const formatDate = (date: Date) => {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    
-    return `${day}-${month}-${year}`;
-  };
-  
-  const formattedDate = formatDate(item.createdAt);
-  const isEdited = !!item.lastEditedAt;
-  const formattedEditDate = item.lastEditedAt ? formatDate(item.lastEditedAt) : '';
 
   // Reset position
   const resetPosition = () => {
@@ -58,6 +40,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
       };
     }
   }, [revealWidth]);
+
   // Handle drag start (both mouse and touch)
   const handleDragStart = (clientX: number) => {
     setIsDragging(true);
@@ -162,9 +145,9 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     <div 
       ref={containerRef}
       className="relative rounded-lg mb-3 select-none"
-      style={{ height: '80px' }} // Increased height for date
+      style={{ height: '60px' }}
     >
-      {/* Action buttons background - always rendered with higher z-index */}
+      {/* Action buttons - slide in from right */}
       <div 
         className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
         style={{ 
@@ -176,6 +159,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           transform: `translateX(${150 - revealWidth}px)`
         }}
       >
+        {/* Edit button */}
         <button 
           className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
           onClick={handleEditClick}
@@ -192,14 +176,13 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         </button>
       </div>
 
-      {/* Main card - stays in place with pale golden background */}
+      {/* Main card - stays in place with layered text */}
       <div 
-        className="absolute top-0 left-0 h-full p-4 shadow-sm border border-gray-200 cursor-pointer rounded-lg z-10"
+        className="absolute top-0 left-0 h-full shadow-sm border border-gray-200 cursor-pointer rounded-lg"
         style={{ 
           width: '100%',
           userSelect: 'none',
           WebkitUserSelect: 'none',
-          transition: isDragging ? 'none' : 'none',
           backgroundColor: '#fefce8', // Pale golden background
           zIndex: 5
         }}
@@ -209,25 +192,31 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         onMouseDown={handleMouseDown}
         onClick={handleCardClick}
       >
-        <div className="flex justify-between items-center pointer-events-none h-full">
-          <div className="flex-1 pr-4">
-            <div className="font-medium text-gray-800 truncate mb-1">
-              {item.name}
-            </div>
-            <div className="text-xs text-gray-500">
-              {isEdited ? (
-                <span>
-                  {formattedEditDate} <span className="text-blue-600 font-medium">(Last edited)</span>
-                </span>
-              ) : (
-                formattedDate
-              )}
-            </div>
+        {/* Content container with layered text */}
+        <div className="relative h-full flex items-center px-4 pointer-events-none">
+          {/* Price text - positioned behind item text (lower z-index) */}
+          <div 
+            className="absolute right-4 font-semibold text-gray-900 whitespace-nowrap"
+            style={{ 
+              zIndex: 1,
+              fontSize: '16px'
+            }}
+          >
+            {formattedPrice}
           </div>
-          <div className="text-right">
-            <div className="font-semibold text-gray-900 whitespace-nowrap">
-              {formattedPrice}
-            </div>
+          
+          {/* Item text - positioned above price text (higher z-index) */}
+          <div 
+            className="relative font-medium text-gray-800 pr-4"
+            style={{ 
+              zIndex: 2,
+              fontSize: '16px',
+              width: '100%',
+              backgroundColor: '#fefce8', // Same as card background to overlay price
+              paddingRight: '16px'
+            }}
+          >
+            {item.name}
           </div>
         </div>
       </div>
