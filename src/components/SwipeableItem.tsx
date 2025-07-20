@@ -127,14 +127,11 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 
   // Handle card click (when actions are revealed or text is truncated)
   const handleCardClick = () => {
-    if (revealWidth >= 100) {
-      onDelete(item.id);
-      resetPosition();
-    } else if (revealWidth >= 50) {
-      onEdit(item);
-      resetPosition();
-    } else if (isTextTruncated()) {
+    if (isTextTruncated() && revealWidth === 0) {
       setShowTextPopup(true);
+    } else if (revealWidth > 0) {
+      // If buttons are revealed, just reset position when clicking on card
+      resetPosition();
     }
   };
 
