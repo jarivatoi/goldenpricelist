@@ -499,7 +499,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 
         {/* Price Text: Initially visible, moves with swipe */}
         <div 
-          className="absolute top-0 right-0 h-full flex items-center justify-center font-semibold text-gray-900 whitespace-nowrap bg-yellow-100 rounded-r-lg"
+          className="absolute top-0 right-0 h-full flex items-center justify-center whitespace-nowrap"
           onClick={revealWidth > 0 ? resetPosition : undefined}
           style={{ 
             // Dynamic width based on price text length
