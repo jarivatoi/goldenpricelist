@@ -169,9 +169,10 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
         style={{ 
           width: `${revealWidth}px`,
-          zIndex: 10,
+          zIndex: 5,
           opacity: revealWidth > 0 ? 1 : 0,
-          visibility: revealWidth > 0 ? 'visible' : 'hidden'
+          visibility: revealWidth > 0 ? 'visible' : 'hidden',
+          clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`
         }}
       >
         <button 
@@ -194,12 +195,13 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
       <div 
         className="absolute top-0 left-0 h-full p-4 shadow-sm border border-gray-200 cursor-pointer rounded-lg z-10"
         style={{ 
-          width: `calc(100% - ${revealWidth}px)`,
+          width: '100%',
+          transform: `translateX(-${revealWidth}px)`,
           userSelect: 'none',
           WebkitUserSelect: 'none',
-          transition: isDragging ? 'none' : 'width 0.2s ease-out',
+          transition: isDragging ? 'none' : 'transform 0.2s ease-out',
           backgroundColor: '#fefce8', // Pale golden background
-          zIndex: 20
+          zIndex: 10
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
