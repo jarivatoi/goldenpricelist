@@ -40,6 +40,24 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     setRevealWidth(0);
   };
 
+  // Handle clicks outside the container to reset position
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node) && revealWidth > 0) {
+        resetPosition();
+      }
+    };
+
+    if (revealWidth > 0) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('touchstart', handleClickOutside);
+      };
+    }
+  }, [revealWidth]);
   // Handle drag start (both mouse and touch)
   const handleDragStart = (clientX: number) => {
     setIsDragging(true);
@@ -143,11 +161,11 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
   return (
     <div 
       ref={containerRef}
-      className="relative rounded-lg mb-3 overflow-hidden select-none"
+      className="relative rounded-lg mb-3 select-none"
       style={{ height: '80px' }} // Increased height for date
     >
-      {/* Action buttons background - always rendered */}
-      <div className="absolute top-0 right-0 h-full w-[150px] flex">
+      {/* Action buttons background - always rendered with higher z-index */}
+      <div className="absolute top-0 right-0 h-full w-[150px] flex z-20 rounded-lg overflow-hidden">
         {/* Edit button */}
         <button 
           className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
@@ -165,19 +183,9 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         </button>
       </div>
 
-      {/* Overlay to hide actions when not revealed */}
-      <div 
-        className="absolute top-0 bg-gray-50 h-full" // Matches main background
-        style={{ 
-          right: 0,
-          width: `${150 - revealWidth}px`,
-          transition: isDragging ? 'none' : 'width 0.2s ease-out'
-        }}
-      />
-
       {/* Main card - stays in place with pale golden background */}
       <div 
-        className="absolute top-0 left-0 h-full p-4 shadow-sm border border-gray-200 cursor-pointer"
+        className="absolute top-0 left-0 h-full p-4 shadow-sm border border-gray-200 cursor-pointer rounded-lg z-10"
         style={{ 
           width: `calc(100% - ${revealWidth}px)`,
           userSelect: 'none',
