@@ -162,25 +162,14 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         <div
           className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
           style={{ 
-            width: `${150 + (formattedPrice.length * 8 + 16)}px`, // Include space for price
+            width: `150px`, // Only buttons width
             zIndex: 10,
             opacity: revealWidth > 0 ? 1 : 0,
             visibility: revealWidth > 0 ? 'visible' : 'hidden',
-            clipPath: `inset(0 ${Math.max(0, 150 + (formattedPrice.length * 8 + 16) - revealWidth)}px 0 0)`,
-            transform: `translateX(${150 + (formattedPrice.length * 8 + 16) - revealWidth}px)`
+            clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`,
+            transform: `translateX(${150 - revealWidth}px)`
           }}
         >
-          {/* Price text - moves with buttons */}
-          <div 
-            className="flex items-center justify-center font-semibold text-gray-900 whitespace-nowrap bg-yellow-100"
-            style={{ 
-              width: `${formattedPrice.length * 8 + 16}px`,
-              fontSize: '16px'
-            }}
-          >
-            {formattedPrice}
-          </div>
-          
           {/* Edit button */}
           <button 
             className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
@@ -198,11 +187,24 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           </button>
         </div>
 
+        {/* Price text - initially visible, moves with swipe */}
+        <div 
+          className="absolute top-0 right-0 h-full flex items-center justify-center font-semibold text-gray-900 whitespace-nowrap bg-yellow-100 rounded-r-lg"
+          style={{ 
+            width: `${formattedPrice.length * 8 + 16}px`,
+            fontSize: '16px',
+            zIndex: 8,
+            transform: `translateX(-${revealWidth}px)` // Move left as buttons are revealed
+          }}
+        >
+          {formattedPrice}
+        </div>
+
         {/* Main card - stays in place */}
         <div 
           className="absolute top-0 left-0 h-full shadow-sm border border-gray-200 cursor-pointer rounded-lg"
           style={{ 
-            width: '100%',
+            width: `calc(100% - ${formattedPrice.length * 8 + 16}px)`, // Leave space for price
             userSelect: 'none',
             WebkitUserSelect: 'none',
             backgroundColor: '#fefce8', // Pale golden background
