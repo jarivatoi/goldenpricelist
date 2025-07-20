@@ -204,12 +204,16 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         {/* Price text - initially visible, moves with swipe */}
         <div 
           className="absolute top-0 right-0 h-full flex items-center justify-center font-semibold text-gray-900 whitespace-nowrap bg-yellow-100 rounded-r-lg"
+          onClick={revealWidth > 0 ? resetPosition : undefined}
           style={{ 
             width: `${formattedPrice.length * 8 + 16}px`,
             fontSize: '16px',
             zIndex: 8,
             transform: `translateX(-${revealWidth}px)`,
-            transition: (isAnimating || !isDragging) ? 'transform 0.3s ease-out' : 'none'
+            transition: (isAnimating || !isDragging) ? 'transform 0.3s ease-out' : 'none',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            cursor: revealWidth > 0 ? 'pointer' : 'default'
           }}
         >
           {formattedPrice}
