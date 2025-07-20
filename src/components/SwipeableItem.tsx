@@ -165,8 +165,15 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
       style={{ height: '80px' }} // Increased height for date
     >
       {/* Action buttons background - always rendered with higher z-index */}
-      <div className="absolute top-0 right-0 h-full w-[150px] flex z-20 rounded-lg overflow-hidden">
-        {/* Edit button */}
+      <div 
+        className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
+        style={{ 
+          width: `${revealWidth}px`,
+          zIndex: 10,
+          opacity: revealWidth > 0 ? 1 : 0,
+          visibility: revealWidth > 0 ? 'visible' : 'hidden'
+        }}
+      >
         <button 
           className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
           onClick={handleEditClick}
@@ -191,7 +198,8 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           userSelect: 'none',
           WebkitUserSelect: 'none',
           transition: isDragging ? 'none' : 'width 0.2s ease-out',
-          backgroundColor: '#fefce8' // Pale golden background
+          backgroundColor: '#fefce8', // Pale golden background
+          zIndex: 20
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
