@@ -452,5 +452,4 @@ class IndexedDBManager {
  * - Simplified import statements
  * - Memory efficiency
  */
-/**
 export const dbManager = new IndexedDBManager();
