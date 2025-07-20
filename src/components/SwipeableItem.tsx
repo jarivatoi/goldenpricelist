@@ -499,7 +499,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 
         {/* Price Text: Initially visible, moves with swipe */}
         <div 
-          className="absolute top-0 right-0 h-full flex items-center justify-center whitespace-nowrap"
+          className="absolute top-0 right-0 h-full flex items-center justify-center font-semibold text-gray-900 whitespace-nowrap bg-yellow-100 rounded-r-lg"
           onClick={revealWidth > 0 ? resetPosition : undefined}
           style={{ 
             // Dynamic width based on price text length
@@ -515,8 +515,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             WebkitUserSelect: 'none',
             // Cursor feedback based on state
             cursor: revealWidth > 0 ? 'pointer' : 'default'
-            // Background color to prevent overlap with item text
-            backgroundColor: '#f9fafb'
           }}
         >
           {formattedPrice}
@@ -524,13 +522,14 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
 
         {/* Main Card: Stays in place, contains item name */}
         <div 
-          className="absolute top-0 left-0 h-full"
-          style={{
+          className="absolute top-0 left-0 h-full shadow-sm border border-gray-200 cursor-pointer rounded-lg"
+          style={{ 
             width: `calc(100% - ${formattedPrice.length * 8 + 16}px)`, // Leave space for price
             // Prevent text selection during swipe
             userSelect: 'none',
             WebkitUserSelect: 'none',
             touchAction: 'pan-y', // Allow vertical scrolling, prevent horizontal
+            backgroundColor: '#fefce8', // Pale golden background
             zIndex: 5,
           }}
           // Touch event handlers for swipe interaction
@@ -543,18 +542,15 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           onClick={handleCardClick}
         >
           {/* Content Container: Proper padding and layout */}
-          <div className="relative h-full flex items-center pointer-events-none">
+          <div className="relative h-full flex items-center px-4 pointer-events-none">
             {/* Item Text: Truncated with ellipsis, clickable if truncated */}
             <div 
               ref={itemTextRef}
-              className=""
+              className="font-medium text-gray-800 truncate"
               style={{ 
                 fontSize: '16px',
                 zIndex: 2,
-                maxWidth: '100%',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
+                maxWidth: '100%'
               }}
             >
               {item.name}
