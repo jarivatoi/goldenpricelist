@@ -1,5 +1,3 @@
-/**
- * COMPONENTS/HEADER.TSX - APPLICATION HEADER WITH MENU
  * COMPONENTS/HEADER.TSX - APPLICATION HEADER WITH MENU
  * ====================================================
  * 
@@ -224,7 +222,7 @@ const Header: React.FC = () => {
    * Uses sticky positioning and responsive design principles.
    */
   return (
-    /* Sticky Header Container: Stays at top with shadow for depth */
+    {/* Sticky Header Container: Stays at top with shadow for depth */}
     <header className="sticky top-0 bg-white z-20 shadow-sm">
       {/* Content Container: Centered with max width and padding */}
       <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-center relative">
@@ -281,4 +279,6 @@ const Header: React.FC = () => {
     </header>
   );
 };
+
 /**
+export default Header;
