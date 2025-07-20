@@ -1,6 +1,6 @@
 {
   "name": "Golden PriceList",
-  "short_name": "Golden Pricelist",
+  "short_name": "Golden PriceList",
   "description": "A beautiful price list management app",
   "start_url": "/goldenpricelist/?v=2",
   "display": "standalone",
