@@ -66,9 +66,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
       
       // If dragging outside the item vertically, stop the drag
       if (!isWithinBounds) {
-        // Smoothly animate back to closed position
-        setRevealWidth(0);
-        setIsDragging(false);
+        handleDragEnd();
         return;
       }
     }
