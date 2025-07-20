@@ -159,17 +159,28 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         style={{ height: '60px' }}
       >
         {/* Action buttons - slide in from right */}
-        <div 
+        <div
           className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
           style={{ 
-            width: '150px',
+            width: `${150 + (formattedPrice.length * 8 + 16)}px`, // Include space for price
             zIndex: 10,
             opacity: revealWidth > 0 ? 1 : 0,
             visibility: revealWidth > 0 ? 'visible' : 'hidden',
-            clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`,
-            transform: `translateX(${150 - revealWidth}px)`
+            clipPath: `inset(0 ${Math.max(0, 150 + (formattedPrice.length * 8 + 16) - revealWidth)}px 0 0)`,
+            transform: `translateX(${150 + (formattedPrice.length * 8 + 16) - revealWidth}px)`
           }}
         >
+          {/* Price text - moves with buttons */}
+          <div 
+            className="flex items-center justify-center font-semibold text-gray-900 whitespace-nowrap bg-yellow-100"
+            style={{ 
+              width: `${formattedPrice.length * 8 + 16}px`,
+              fontSize: '16px'
+            }}
+          >
+            {formattedPrice}
+          </div>
+          
           {/* Edit button */}
           <button 
             className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
@@ -205,25 +216,13 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         >
           {/* Content container with proper layout */}
           <div className="relative h-full flex items-center px-4 pointer-events-none">
-            {/* Price text - always visible on the right */}
-            <div 
-              className="absolute right-4 font-semibold text-gray-900 whitespace-nowrap"
-              style={{ 
-                fontSize: '16px',
-                zIndex: 3 // Highest z-index to always be visible
-              }}
-            >
-              {formattedPrice}
-            </div>
-            
-            {/* Item text - truncated to not overlap price */}
+            {/* Item text - stays fixed, no padding needed since price moves */}
             <div 
               ref={itemTextRef}
               className="font-medium text-gray-800 truncate"
               style={{ 
                 fontSize: '16px',
                 zIndex: 2,
-                paddingRight: `${formattedPrice.length * 8 + 16}px`, // Dynamic padding based on price length
                 maxWidth: '100%'
               }}
             >
