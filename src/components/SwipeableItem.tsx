@@ -173,6 +173,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
       <div 
         ref={containerRef}
           {/* Edit button */}
+      >
           <button 
             className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
             onClick={handleEditClick}
@@ -198,22 +199,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             zIndex: 8,
             transform: `translateX(-${revealWidth}px)`,
             transition: (isAnimating || !isDragging) ? 'transform 0.3s ease-out' : 'none'
-          }}
-        >
-          {formattedPrice}
-        </div>
-
-        {/* Action buttons - slide in from right */}
-        <div
-          className="absolute top-0 right-0 h-full flex rounded-lg overflow-hidden"
-          style={{ 
-            width: `150px`, // Only buttons width
-            zIndex: 10,
-            opacity: revealWidth > 0 ? 1 : 0,
-            visibility: revealWidth > 0 ? 'visible' : 'hidden',
-            clipPath: `inset(0 ${Math.max(0, 150 - revealWidth)}px 0 0)`,
-            transform: `translateX(${150 - revealWidth}px)`,
-            transition: (isAnimating || !isDragging) ? 'all 0.3s ease-out' : 'none'
           }}
         >
           {formattedPrice}
