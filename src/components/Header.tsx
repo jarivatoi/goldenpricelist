@@ -1,4 +1,5 @@
  * COMPONENTS/HEADER.TSX - APPLICATION HEADER WITH MENU
+ * COMPONENTS/HEADER.TSX - APPLICATION HEADER WITH MENU
  * ====================================================
  * 
  * OVERVIEW:
@@ -279,6 +280,4 @@ const Header: React.FC = () => {
     </header>
   );
 };
-
 /**
-export default Header;
