@@ -5,7 +5,7 @@ const AddToHomeScreen: React.FC = () => {
   useEffect(() => {
     // Initialize the add to homescreen utility with your specific configuration
     const addToHomescreen = new AddToHomescreen({
-      appName: 'Golden PriceList',
+      appName: 'Golden Pricelist',
       appIconUrl: 'https://jarivatoi.github.io/goldenpricelist/icon-512.png'
     });
 

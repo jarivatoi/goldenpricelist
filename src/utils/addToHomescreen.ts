@@ -4,7 +4,7 @@ export class AddToHomescreen {
 
   constructor(options: any = {}) {
     this.options = {
-      appName: 'Golden PriceList',
+      appName: 'Golden Pricelist',
       appIconUrl: 'https://jarivatoi.github.io/goldenpricelist/icon-512.png',
       ...options
     };
