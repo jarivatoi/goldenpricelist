@@ -84,10 +84,8 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
     setIsDragging(false);
     
     // Snap to positions
-    if (revealWidth >= 100) {
+    if (revealWidth >= 25) {  // Much lower threshold - any meaningful swipe
       setRevealWidth(150); // Full reveal (delete zone)
-    } else if (revealWidth >= 50) {
-      setRevealWidth(75);  // Half reveal (edit zone)
     } else {
       setRevealWidth(0);   // Reset position
     }
