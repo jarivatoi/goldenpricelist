@@ -545,16 +545,35 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
           {/* Content Container: Proper padding and layout */}
           <div className="relative h-full flex items-center px-4 pointer-events-none">
             {/* Item Text: Truncated with ellipsis, clickable if truncated */}
-            <div 
-              ref={itemTextRef}
-              className="font-semibold text-gray-900 truncate"
-              style={{ 
-                fontSize: '16px',
-                zIndex: 2,
-                maxWidth: '100%'
-              }}
-            >
-              {item.name}
+            <div className="flex flex-col justify-center w-full">
+              <div 
+                ref={itemTextRef}
+                className="font-semibold text-gray-900 truncate"
+                style={{ 
+                  fontSize: '16px',
+                  zIndex: 2,
+                  maxWidth: '100%'
+                }}
+              >
+                {item.name}
+              </div>
+              {/* Last edited date display */}
+              {item.lastEditedAt && (
+                <div 
+                  className="text-xs text-gray-500 truncate"
+                  style={{ 
+                    fontSize: '11px',
+                    zIndex: 2,
+                    maxWidth: '100%'
+                  }}
+                >
+                  Last edited on {item.lastEditedAt.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
