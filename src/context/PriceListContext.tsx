@@ -416,6 +416,9 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       // Format and validate input data
       const capitalizedName = capitalizeWords(name);
       
+      // Create updated item with new lastEditedAt timestamp
+      const now = new Date();
+      
       // Update local state first (optimistic update)
       setItems(prevItems => 
         prevItems.map(item => 
@@ -423,20 +426,20 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             ...item, 
             name: capitalizedName, 
             price, 
-            lastEditedAt: new Date() // Update modification timestamp
+            lastEditedAt: now // Update modification timestamp
           } : item
         )
       );
 
-      // Find the updated item for database operation
-      const updatedItem = items.find(item => item.id === id);
-      if (updatedItem) {
+      // Find the original item for database operation
+      const originalItem = items.find(item => item.id === id);
+      if (originalItem) {
         // Create updated item object with new data
         const itemToUpdate = {
-          ...updatedItem,
+          ...originalItem,
           name: capitalizedName,
           price,
-          lastEditedAt: new Date()
+          lastEditedAt: now
         };
         
         // Persist changes to IndexedDB
