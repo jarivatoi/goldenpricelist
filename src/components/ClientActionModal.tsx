@@ -74,33 +74,21 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
       const description = transaction.description.toLowerCase();
       console.log(`📝 Processing: "${transaction.description}" (amount: ${transaction.amount})`);
       
-      // Look for Chopine items - simplified patterns
-      const chopineMatches = description.match(/(\d+)\s*([^,]*?chopines?)/gi) || [];
-      if (chopineMatches.length > 0) {
-        console.log('🍺 Chopine matches found:', chopineMatches);
+      // Only process items that contain "chopine" or "bouteille"
+      if (!description.includes('chopine') && !description.includes('bouteille')) {
+        console.log(`⏭️ Skipping: "${transaction.description}" (no chopine/bouteille)`);
+        return;
       }
       
-      // Look for Bouteille items - capture size and bouteille
-      const bouteilleMatches = description.match(/(\d+)\s*([^,]*?bouteilles?)/gi) || [];
-      if (bouteilleMatches.length > 0) {
-        console.log('🍾 Bouteille matches found:', bouteilleMatches);
-      }
-      
-      // Also check for common variations
-      const hasChopine = description.includes('chopine');
-      const hasBouteille = description.includes('bouteille');
-      
-      // Process Chopine matches
+      // Look for Chopine items: quantity + anything + chopine + brand
+      const chopineMatches = description.match(/(\d+)\s+([^,]*?chopines?\s+[^,]*)/gi) || [];
       chopineMatches.forEach(match => {
-        const fullMatch = match.match(/(\d+)\s*([^,]*?chopines?)/i);
+        const fullMatch = match.match(/(\d+)\s+([^,]*?chopines?\s+([^,]*))/i);
         if (!fullMatch) return;
         
         const quantity = parseInt(fullMatch[1]);
-        const chopineType = fullMatch[2].trim();
-        
-        // Extract any descriptive text before "chopine"
-        const typeMatch = chopineType.match(/^(.*?)\s*chopines?$/i);
-        const key = typeMatch && typeMatch[1].trim() ? `${typeMatch[1].trim()} Chopine` : 'Chopine';
+        const brand = fullMatch[3]?.trim() || '';
+        const key = brand ? `Chopine ${brand}` : 'Chopine';
         
         console.log(`✅ Adding ${quantity} ${key} from: "${transaction.description}"`);
         
@@ -116,17 +104,31 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
         });
       });
       
-      // Process Bouteille matches
+      // Look for Bouteille items: quantity + size + bouteille + brand
+      const bouteilleMatches = description.match(/(\d+)\s+([^,]*?bouteilles?\s+[^,]*)/gi) || [];
       bouteilleMatches.forEach(match => {
-        const fullMatch = match.match(/(\d+)\s*([^,]*?bouteilles?)/i);
+        const fullMatch = match.match(/(\d+)\s+((?:\d+(?:\.\d+)?L\s+)?bouteilles?\s+([^,]*))/i);
         if (!fullMatch) return;
         
         const quantity = parseInt(fullMatch[1]);
-        const bouteilleType = fullMatch[2].trim();
+        const sizeAndBrand = fullMatch[2].trim();
+        const brand = fullMatch[3]?.trim() || '';
         
-        // Extract size information (like "1.5L", "2L", etc.)
-        const sizeMatch = bouteilleType.match(/(\d+(?:\.\d+)?L)/i);
-        const key = sizeMatch ? `${sizeMatch[1]} Bouteille` : 'Bouteille';
+        // Extract size if present
+        const sizeMatch = sizeAndBrand.match(/(\d+(?:\.\d+)?L)/i);
+        const size = sizeMatch ? sizeMatch[1] : '';
+        
+        // Format the key based on what we found
+        let key;
+        if (size && brand) {
+          key = `${size} ${brand}`;
+        } else if (brand) {
+          key = `Bouteille ${brand}`;
+        } else if (size) {
+          key = `${size} Bouteille`;
+        } else {
+          key = 'Bouteille';
+        }
         
         console.log(`✅ Adding ${quantity} ${key} from: "${transaction.description}"`);
         
@@ -142,11 +144,22 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
         });
       });
       
-      // Check for items without explicit numbers (assume quantity 1)
+      // Handle items without explicit numbers (assume quantity 1)
       if (description.includes('bouteille') && bouteilleMatches.length === 0) {
-        // Look for size in the description
         const sizeMatch = description.match(/(\d+(?:\.\d+)?L)/i);
-        const key = sizeMatch ? `${sizeMatch[1]} Bouteille` : 'Bouteille';
+        const brandMatch = description.match(/bouteilles?\s+([^,]*)/i);
+        const brand = brandMatch?.[1]?.trim() || '';
+        
+        let key;
+        if (sizeMatch && brand) {
+          key = `${sizeMatch[1]} ${brand}`;
+        } else if (brand) {
+          key = `Bouteille ${brand}`;
+        } else if (sizeMatch) {
+          key = `${sizeMatch[1]} Bouteille`;
+        } else {
+          key = 'Bouteille';
+        }
         
         console.log(`✅ Adding 1 ${key} (no number) from: "${transaction.description}"`);
         
@@ -163,9 +176,9 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
       }
       
       if (description.includes('chopine') && chopineMatches.length === 0) {
-        // Extract any descriptive text before "chopine"
-        const typeMatch = description.match(/([^,]*?)\s*chopines?/i);
-        const key = typeMatch && typeMatch[1].trim() ? `${typeMatch[1].trim()} Chopine` : 'Chopine';
+        const brandMatch = description.match(/chopines?\s+([^,]*)/i);
+        const brand = brandMatch?.[1]?.trim() || '';
+        const key = brand ? `Chopine ${brand}` : 'Chopine';
         
         console.log(`✅ Adding 1 ${key} (no number) from: "${transaction.description}"`);
         
