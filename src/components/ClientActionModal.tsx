@@ -39,7 +39,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
       await addPartialPayment(client.id, amount);
       // Reset calculator after successful payment
       if (onResetCalculator) {
-        onResetCalculator?.();
+        onResetCalculator();
       }
       onClose();
     } catch (error) {
@@ -56,7 +56,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
       await settleClient(client.id);
       // Reset calculator after successful settlement
       if (onResetCalculator) {
-        onResetCalculator?.();
+        onResetCalculator();
       }
       onClose();
     } catch (error) {
@@ -225,7 +225,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
       }
       // Reset calculator after successful returns processing
       if (onResetCalculator) {
-        onResetCalculator?.();
+        onResetCalculator();
       }
       onClose();
     } catch (error) {
@@ -453,7 +453,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
                         onClose();
                         // Reset calculator after settling all returnables
                         if (onResetCalculator) {
-                          onResetCalculator?.();
+                          onResetCalculator();
                         }
                       } catch (error) {
                         console.error('Error settling all returnables:', error);
@@ -502,7 +502,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
                                   onClose();
                                   // Reset calculator after settling individual item
                                   if (onResetCalculator) {
-                                    onResetCalculator?.();
+                                    onResetCalculator();
                                   }
                                 } catch (error) {
                                   console.error('Error settling item type:', error);
