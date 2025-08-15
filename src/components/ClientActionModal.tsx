@@ -37,6 +37,10 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
     try {
       setIsProcessing(true);
       await addPartialPayment(client.id, amount);
+      // Reset calculator after successful payment
+      if (onResetCalculator) {
+        onResetCalculator();
+      }
       onClose();
     } catch (error) {
       console.error('Error processing partial payment:', error);
@@ -50,6 +54,10 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
     try {
       setIsProcessing(true);
       await settleClient(client.id);
+      // Reset calculator after successful settlement
+      if (onResetCalculator) {
+        onResetCalculator();
+      }
       onClose();
     } catch (error) {
       console.error('Error settling client:', error);
@@ -443,6 +451,10 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
                           }
                         }
                         onClose();
+                        // Reset calculator after settling all returnables
+                        if (onResetCalculator) {
+                          onResetCalculator();
+                        }
                       } catch (error) {
                         console.error('Error settling all returnables:', error);
                         alert('Failed to settle all returnables');

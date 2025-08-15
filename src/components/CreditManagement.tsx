@@ -195,6 +195,15 @@ const CreditManagement: React.FC = () => {
     setIsCalculatorActive(false);
     setLinkedClient(null);
   };
+
+  const handleResetCalculatorAndDescription = () => {
+    setCalculatorValue('0');
+    setIsCalculatorActive(false);
+    setLinkedClient(null);
+    // Force close and reopen ClientSearchModal to reset description
+    setShowClientSearch(false);
+  };
+
   const handleAddToClient = async (client: Client, description: string) => {
     try {
       console.log('Adding transaction:', { clientId: client.id, clientName: client.name, description, amount: calculatorValue });
