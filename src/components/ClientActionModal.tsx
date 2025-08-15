@@ -470,7 +470,35 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
                           <h4 className="font-medium text-gray-800">{itemType}</h4>
                           <p className="text-sm text-gray-600">Available to return: {data.total}</p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          {/* Individual Settle Button */}
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const confirmed = window.confirm(
+                                `Return all ${data.total} ${itemType}${data.total > 1 ? 's' : ''} for ${client.name}?`
+                              );
+                              if (confirmed) {
+                                try {
+                                  setIsProcessing(true);
+                                  await processItemReturn(itemType, data.total);
+                                  onClose();
+                                } catch (error) {
+                                  console.error('Error settling item type:', error);
+                                  alert(`Failed to settle ${itemType}`);
+                                } finally {
+                                  setIsProcessing(false);
+                                }
+                              }
+                            }}
+                            disabled={isProcessing}
+                            className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                            title={`Settle all ${itemType}`}
+                          >
+                            <X size={16} />
+                          </button>
+                          
+                          {/* Quantity Controls */}
                           <button
                             type="button"
                             onClick={() => handleReturnQuantityChange(itemType, -1)}
