@@ -160,12 +160,16 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-medium text-gray-800">{transaction.description}</h4>
                       <span className={`text-lg font-semibold ${
-                        transaction.description.toLowerCase().includes('returned') 
-                          ? 'text-red-600' 
+                        transaction.description.toLowerCase().includes('returned')
+                          ? 'text-green-600'
+                          : transaction.amount === 0
+                          ? 'text-red-600'
                           : 'text-red-600'
                       }`}>
-                        {transaction.description.toLowerCase().includes('returned') 
-                          ? 'Taken' 
+                        {transaction.description.toLowerCase().includes('returned')
+                          ? 'Returned'
+                          : transaction.amount === 0
+                          ? 'Taken'
                           : `Rs ${transaction.amount.toFixed(2)}`
                         }
                       </span>
