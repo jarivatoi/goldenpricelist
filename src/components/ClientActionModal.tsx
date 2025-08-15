@@ -80,15 +80,15 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
         console.log('🍺 Chopine matches found:', chopineMatches);
       }
       
-      // Look for Bouteille items - simplified patterns
-      const bouteilleMatches = description.match(/(\d+)\s*bouteilles?/gi) || [];
+      // Look for Bouteille items - any text with bouteille and optional number
+      const bouteilleMatches = description.match(/(\d+)\s*[^,]*?bouteilles?/gi) || [];
       if (bouteilleMatches.length > 0) {
         console.log('🍾 Bouteille matches found:', bouteilleMatches);
       }
       
       // Also check for common variations
       const hasChopine = description.includes('chopine');
-      const hasBouteille = description.includes('bouteille') || description.includes('bottle');
+      const hasBouteille = description.includes('bouteille');
       
       // Process Chopine matches
       chopineMatches.forEach(match => {
