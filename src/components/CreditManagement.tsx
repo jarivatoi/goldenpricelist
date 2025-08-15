@@ -195,6 +195,7 @@ const CreditManagement: React.FC = () => {
     setCalculatorValue('0');
     setIsCalculatorActive(false);
     setLinkedClient(null);
+    setShowClientSearch(false); // Close the ClientSearchModal
   };
 
   const handleResetCalculatorAndDescription = () => {
