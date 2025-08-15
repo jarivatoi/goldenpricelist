@@ -15,7 +15,7 @@ interface ClientActionModalProps {
  * 
  * Shows partial payment and settle options when swiping up on client card
  */
-const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }) => {
+const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, onResetCalculator }) => {
   const { addPartialPayment, settleClient, getClientTotalDebt, returnBottles, getClientBottlesOwed, getClientTransactions, addTransaction } = useCredit();
   const [showPartialPayment, setShowPartialPayment] = useState(false);
   const [showReturnTab, setShowReturnTab] = useState(false);
