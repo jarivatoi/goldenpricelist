@@ -9,6 +9,7 @@ interface ClientCardProps {
   client: Client;
   onLongPress: () => void;
   onQuickAdd?: (client: Client) => void;
+  onResetCalculator?: () => void;
 }
 
 /**
@@ -17,7 +18,7 @@ interface ClientCardProps {
  * 
  * Displays individual client information with swipe and long press interactions
  */
-const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd }) => {
+const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd, onResetCalculator }) => {
   const { getClientTotalDebt, getClientBottlesOwed } = useCredit();
   const [showDetails, setShowDetails] = useState(false);
   const [showActions, setShowActions] = useState(false);
@@ -307,6 +308,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd
         <ClientActionModal
           client={client}
           onClose={() => setShowActions(false)}
+          onResetCalculator={onResetCalculator}
         />
       )}
     </>

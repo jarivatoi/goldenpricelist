@@ -353,6 +353,7 @@ const CreditManagement: React.FC = () => {
                       client={client}
                       onLongPress={() => setSelectedClient(client)}
                       onQuickAdd={handleQuickAdd}
+                      onResetCalculator={handleResetCalculator}
                     />
                   ))
                 )}
