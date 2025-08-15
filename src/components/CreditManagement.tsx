@@ -191,12 +191,14 @@ const CreditManagement: React.FC = () => {
   };
 
   const handleResetCalculator = () => {
+    console.log('🔄 CreditManagement: Resetting calculator');
     setCalculatorValue('0');
     setIsCalculatorActive(false);
     setLinkedClient(null);
   };
 
   const handleResetCalculatorAndDescription = () => {
+    console.log('🔄 CreditManagement: Resetting calculator and closing modal');
     setCalculatorValue('0');
     setIsCalculatorActive(false);
     setLinkedClient(null);

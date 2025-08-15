@@ -32,6 +32,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
 
   // Reset all state when modal is opened
   React.useEffect(() => {
+    console.log('🔄 ClientSearchModal: Resetting state for calculatorValue:', calculatorValue);
     setDescription('');
     setDescriptionHistory([]);
     setPendingNumber('');
