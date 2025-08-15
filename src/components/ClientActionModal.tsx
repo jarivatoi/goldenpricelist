@@ -416,6 +416,43 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
                   <X size={20} />
                 </button>
                 <h3 className="text-lg font-medium text-gray-800">Return Chopine & Bouteille</h3>
+                <div className="flex-1"></div>
+                <button
+                  onClick={async () => {
+                    const confirmed = window.confirm(
+                      `Return ALL available Chopine & Bouteille items for ${client.name}? This will mark all returnable containers as returned.`
+                    );
+                    if (confirmed) {
+                      try {
+                        setIsProcessing(true);
+                        // Set all available items to be returned
+                        const allReturns: {[key: string]: number} = {};
+                        Object.entries(availableItems).forEach(([itemType, data]) => {
+                          allReturns[itemType] = data.total;
+                        });
+                        
+                        // Process all returns
+                        for (const [itemType, quantity] of Object.entries(allReturns)) {
+                          if (quantity > 0) {
+                            await processItemReturn(itemType, quantity);
+                          }
+                        }
+                        onClose();
+                      } catch (error) {
+                        console.error('Error settling all returnables:', error);
+                        alert('Failed to settle all returnables');
+                      } finally {
+                        setIsProcessing(false);
+                      }
+                    }
+                  }}
+                  disabled={isProcessing || Object.keys(availableItems).length === 0}
+                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1"
+                  title="Settle all returnable items"
+                >
+                  <X size={16} />
+                  <span className="text-sm">Settle All</span>
+                </button>
               </div>
               
               {Object.keys(availableItems).length === 0 ? (
