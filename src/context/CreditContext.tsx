@@ -10,7 +10,7 @@ interface CreditContextType {
   error: string | null;
   
   // Client operations
-  addClient: (id: string, name: string) => Promise<void>;
+  addClient: (name: string) => Promise<Client>;
   deleteClient: (clientId: string) => Promise<void>;
   searchClients: (query: string) => Client[];
   getClientTotalDebt: (clientId: string) => number;
@@ -132,8 +132,19 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   }, []);
 
   // Add new client
-  const addClient = async (id: string, name: string) => {
+  const addClient = async (name: string) => {
     try {
+      // Generate a unique ID for the new client
+      const id = name.toLowerCase().replace(/\s+/g, '');
+      
+      // Check if client ID already exists
+      const existingClient = clients.find(c => c.id === id);
+      if (existingClient) {
+        const error = new Error(`Client with ID "${id}" already exists`);
+        error.name = 'DuplicateClientError';
+        throw error;
+      }
+      
       const { error } = await supabase
         .from('credit_clients')
         .insert({
@@ -155,6 +166,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       };
 
       setClients(prev => [...prev, newClient]);
+      
+      return newClient;
     } catch (err) {
       console.error('Error adding client:', err);
       throw err;
