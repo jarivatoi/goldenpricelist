@@ -226,24 +226,12 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       if (transactionError) throw transactionError;
 
       // Parse bottles from description
-      const bottleUpdates = parseBottlesFromDescription(description);
-      
-      // Update client's total debt and bottles owed
-      const currentBottles = getClientBottlesOwed(client.id);
-      const newBottles = {
-        beer: currentBottles.beer + (bottleUpdates.beer || 0),
-        guinness: currentBottles.guinness + (bottleUpdates.guinness || 0),
-        malta: currentBottles.malta + (bottleUpdates.malta || 0),
-        coca: currentBottles.coca + (bottleUpdates.coca || 0),
-        chopines: currentBottles.chopines + (bottleUpdates.chopines || 0)
-      };
 
       const { error: clientError } = await supabase
         .from('credit_clients')
         .update({
           total_debt: getClientTotalDebt(client.id) + amount,
-          last_transaction_at: new Date().toISOString(),
-          bottles_owed: JSON.stringify(newBottles)
+          last_transaction_at: new Date().toISOString()
         })
         .eq('id', client.id);
 
@@ -259,60 +247,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
 
   // Parse bottles from description
   const parseBottlesFromDescription = (description: string) => {
-    const bottles = { beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 };
-    const lowercaseDesc = description.toLowerCase();
-
-    // Parse Chopine
-    const chopineMatches = lowercaseDesc.match(/(\d+)\s*chopines?/g) || [];
-    chopineMatches.forEach(match => {
-      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
-      bottles.chopines += quantity;
-    });
-
-    // If description contains "chopine" without number, assume 1
-    if (lowercaseDesc.includes('chopine') && chopineMatches.length === 0) {
-      bottles.chopines += 1;
-    }
-
-    // Parse different bottle types
-    // 1.5L bottles
-    const bottle15LMatches = lowercaseDesc.match(/(\d+)\s*1\.5l/g) || [];
-    bottle15LMatches.forEach(match => {
-      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
-      bottles.malta += quantity; // Map 1.5L to malta
-    });
-
-    // 2L bottles  
-    const bottle2LMatches = lowercaseDesc.match(/(\d+)\s*2l/g) || [];
-    bottle2LMatches.forEach(match => {
-      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
-      bottles.coca += quantity; // Map 2L to coca
-    });
-
-    // 0.5L bottles
-    const bottle05LMatches = lowercaseDesc.match(/(\d+)\s*0\.5l/g) || [];
-    bottle05LMatches.forEach(match => {
-      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
-      bottles.guinness += quantity; // Map 0.5L to guinness
-    });
-
-    // Regular Bouteille (without size specification) - map to beer
-    const bouteilleMatches = lowercaseDesc.match(/(\d+)\s*bouteilles?(?!\s*[0-9.]+l)/g) || [];
-    bouteilleMatches.forEach(match => {
-      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
-      bottles.beer += quantity;
-    });
-
-    // If description contains "bouteille" without number and no size, assume 1 regular bottle
-    if (lowercaseDesc.includes('bouteille') && 
-        bouteilleMatches.length === 0 && 
-        bottle15LMatches.length === 0 && 
-        bottle2LMatches.length === 0 && 
-        bottle05LMatches.length === 0) {
-      bottles.beer += 1;
-    }
-
-    return bottles;
+    // No automatic bottle parsing - bottles are tracked manually if needed
+    return { beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 };
   };
 
   // Add partial payment
