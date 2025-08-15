@@ -6,6 +6,7 @@ import { useCredit } from '../context/CreditContext';
 interface ClientActionModalProps {
   client: Client;
   onClose: () => void;
+  onResetCalculator?: () => void;
 }
 
 /**

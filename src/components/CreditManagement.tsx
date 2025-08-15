@@ -190,6 +190,11 @@ const CreditManagement: React.FC = () => {
     setIsCalculatorActive(false);
   };
 
+  const handleResetCalculator = () => {
+    setCalculatorValue('0');
+    setIsCalculatorActive(false);
+    setLinkedClient(null);
+  };
   const handleAddToClient = async (client: Client, description: string) => {
     try {
       console.log('Adding transaction:', { clientId: client.id, clientName: client.name, description, amount: calculatorValue });
