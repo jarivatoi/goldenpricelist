@@ -39,7 +39,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     setSearchQuery('');
     setShowAddClient(false);
     setNewClientName('');
-  }, []); // Empty dependency array means this runs once when component mounts
+  }, [calculatorValue]); // Reset whenever calculatorValue changes (new modal session)
   
   const filteredClients = searchClients(searchQuery).sort((a, b) => 
     a.name.localeCompare(b.name)
