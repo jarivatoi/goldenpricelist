@@ -26,11 +26,35 @@ const CreditManagement: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [showReturnableOnly, setShowReturnableOnly] = useState(false);
 
-  // Filter clients based on search
-  const filteredClients = showAllClients 
-    ? searchClients(searchQuery) // Show all clients when toggled
-    : searchClients(searchQuery).filter(client => getClientTotalDebt(client.id) > 0); // Only active debtors
+  // Helper function to check if client has returnable items
+  const hasReturnableItems = (client: Client): boolean => {
+    const { getClientTransactions } = useCredit();
+    const transactions = getClientTransactions(client.id);
+    
+    return transactions.some(transaction => {
+      if (transaction.type === 'payment' || transaction.description.toLowerCase().includes('returned')) {
+        return false;
+      }
+      
+      const description = transaction.description.toLowerCase();
+      return description.includes('chopine') || description.includes('bouteille');
+    });
+  };
+
+  // Filter clients based on search and active filters
+  let filteredClients = searchClients(searchQuery);
+  
+  if (!showAllClients) {
+    // Only show clients with debt
+    filteredClients = filteredClients.filter(client => getClientTotalDebt(client.id) > 0);
+  }
+  
+  if (showReturnableOnly) {
+    // Only show clients with returnable items
+    filteredClients = filteredClients.filter(client => hasReturnableItems(client));
+  }
   
   // Sort clients: earliest debts on right, latest on left
   const sortedClients = [...filteredClients]
@@ -361,7 +385,7 @@ const CreditManagement: React.FC = () => {
           </div>
 
           {/* Toggle to show all clients */}
-          <div className="flex justify-center mt-3">
+          <div className="flex justify-center gap-3 mt-3">
             <button
               onClick={() => setShowAllClients(!showAllClients)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -371,6 +395,16 @@ const CreditManagement: React.FC = () => {
               }`}
             >
               {showAllClients ? 'Show Active Only' : 'Show All Clients'}
+            </button>
+            <button
+              onClick={() => setShowReturnableOnly(!showReturnableOnly)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                showReturnableOnly 
+                  ? 'bg-orange-500 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {showReturnableOnly ? 'Show All' : 'Returnable'}
             </button>
           </div>
         </div>
