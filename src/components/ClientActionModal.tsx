@@ -55,7 +55,6 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
       setIsProcessing(true);
       await settleClient(client.id);
       onClose();
-      // Reset calculator after successful settlement and modal close
       if (onResetCalculator) {
         onResetCalculator();
       }

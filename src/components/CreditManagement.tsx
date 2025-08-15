@@ -195,7 +195,7 @@ const CreditManagement: React.FC = () => {
     setCalculatorValue('0');
     setIsCalculatorActive(false);
     setLinkedClient(null);
-    setShowClientSearch(false); // Close the ClientSearchModal
+    setShowClientSearch(false);
   };
 
   const handleResetCalculatorAndDescription = () => {
@@ -203,7 +203,6 @@ const CreditManagement: React.FC = () => {
     setCalculatorValue('0');
     setIsCalculatorActive(false);
     setLinkedClient(null);
-    // Force close and reset the ClientSearchModal
     setShowClientSearch(false);
   };
 
@@ -234,10 +233,6 @@ const CreditManagement: React.FC = () => {
       
       if (isNaN(amount) || !isFinite(amount) || amount < 0) {
         throw new Error('Please enter a valid amount');
-      }
-      
-      if (amount < 0) {
-        throw new Error('Amount cannot be negative');
       }
       
       if (!description || !description.trim()) {
