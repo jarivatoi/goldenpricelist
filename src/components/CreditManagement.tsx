@@ -11,7 +11,7 @@ import { Client } from '../types';
  * ================================
  */
 const CreditManagement: React.FC = () => {
-  const { clients, searchClients, addTransaction, getClientTotalDebt, deleteClient, getClientTransactions } = useCredit();
+  const { clients, searchClients, addTransaction, getClientTotalDebt, deleteClient } = useCredit();
   
   // State management
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +29,8 @@ const CreditManagement: React.FC = () => {
   const [showReturnableOnly, setShowReturnableOnly] = useState(false);
 
   // Helper function to check if client has returnable items
-  const hasReturnableItems = (client: Client, getClientTransactions: (clientId: string) => any[]): boolean => {
+  const hasReturnableItems = (client: Client): boolean => {
+    const { getClientTransactions } = useCredit();
     const transactions = getClientTransactions(client.id);
     
     return transactions.some(transaction => {
@@ -52,7 +53,7 @@ const CreditManagement: React.FC = () => {
   
   if (showReturnableOnly) {
     // Only show clients with returnable items
-    filteredClients = filteredClients.filter(client => hasReturnableItems(client, getClientTransactions));
+    filteredClients = filteredClients.filter(client => hasReturnableItems(client));
   }
   
   // Sort clients: earliest debts on right, latest on left
