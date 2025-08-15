@@ -75,13 +75,13 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
       console.log(`📝 Processing: "${transaction.description}" (amount: ${transaction.amount})`);
       
       // Look for Chopine items - simplified patterns
-      const chopineMatches = description.match(/(\d+)\s*chopines?/gi) || [];
+      const chopineMatches = description.match(/(\d+)\s*([^,]*?chopines?)/gi) || [];
       if (chopineMatches.length > 0) {
         console.log('🍺 Chopine matches found:', chopineMatches);
       }
       
-      // Look for Bouteille items - any text with bouteille and optional number
-      const bouteilleMatches = description.match(/(\d+)\s*[^,]*?bouteilles?/gi) || [];
+      // Look for Bouteille items - capture size and bouteille
+      const bouteilleMatches = description.match(/(\d+)\s*([^,]*?bouteilles?)/gi) || [];
       if (bouteilleMatches.length > 0) {
         console.log('🍾 Bouteille matches found:', bouteilleMatches);
       }
@@ -92,7 +92,177 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
       
       // Process Chopine matches
       chopineMatches.forEach(match => {
-        const quantityMatch = match.match(/(\d+)/);
+        const fullMatch = match.match(/(\d+)\s*([^,]*?chopines?)/i);
+        if (!fullMatch) return;
+        
+        const quantity = parseInt(fullMatch[1]);
+        const chopineType = fullMatch[2].trim();
+        
+        // Extract any descriptive text before "chopine"
+        const typeMatch = chopineType.match(/^(.*?)\s*chopines?$/i);
+        const key = typeMatch && typeMatch[1].trim() ? `${typeMatch[1].trim()} Chopine` : 'Chopine';
+        
+        console.log(`✅ Adding ${quantity} ${key} from: "${transaction.description}"`);
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = { total: 0, transactions: [] };
+        }
+        returnableItems[key].total += quantity;
+        returnableItems[key].transactions.push({
+          id: transaction.id,
+          description: transaction.description,
+          amount: transaction.amount,
+          quantity: quantity
+        });
+      });
+      
+      // Process Bouteille matches
+      bouteilleMatches.forEach(match => {
+        const fullMatch = match.match(/(\d+)\s*([^,]*?bouteilles?)/i);
+        if (!fullMatch) return;
+        
+        const quantity = parseInt(fullMatch[1]);
+        const bouteilleType = fullMatch[2].trim();
+        
+        // Extract size information (like "1.5L", "2L", etc.)
+        const sizeMatch = bouteilleType.match(/(\d+(?:\.\d+)?L)/i);
+        const key = sizeMatch ? `${sizeMatch[1]} Bouteille` : 'Bouteille';
+        
+        console.log(`✅ Adding ${quantity} ${key} from: "${transaction.description}"`);
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = { total: 0, transactions: [] };
+        }
+        returnableItems[key].total += quantity;
+        returnableItems[key].transactions.push({
+          id: transaction.id,
+          description: transaction.description,
+          amount: transaction.amount,
+          quantity: quantity
+        });
+      });
+      
+      // Check for items without explicit numbers (assume quantity 1)
+      if (description.includes('bouteille') && bouteilleMatches.length === 0) {
+        // Look for size in the description
+        const sizeMatch = description.match(/(\d+(?:\.\d+)?L)/i);
+        const key = sizeMatch ? `${sizeMatch[1]} Bouteille` : 'Bouteille';
+        
+        console.log(`✅ Adding 1 ${key} (no number) from: "${transaction.description}"`);
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = { total: 0, transactions: [] };
+        }
+        returnableItems[key].total += 1;
+        returnableItems[key].transactions.push({
+          id: transaction.id,
+          description: transaction.description,
+          amount: transaction.amount,
+          quantity: 1
+        });
+      }
+      
+      if (description.includes('chopine') && chopineMatches.length === 0) {
+        // Extract any descriptive text before "chopine"
+        const typeMatch = description.match(/([^,]*?)\s*chopines?/i);
+        const key = typeMatch && typeMatch[1].trim() ? `${typeMatch[1].trim()} Chopine` : 'Chopine';
+        
+        console.log(`✅ Adding 1 ${key} (no number) from: "${transaction.description}"`);
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = { total: 0, transactions: [] };
+        }
+        returnableItems[key].total += 1;
+        returnableItems[key].transactions.push({
+          id: transaction.id,
+          description: transaction.description,
+          amount: transaction.amount,
+          quantity: 1
+        });
+      }
+    });
+    
+    console.log('🎯 Final returnable items:', returnableItems);
+    return returnableItems;
+  };
+
+  const handleReturnQuantityChange = (itemType: string, change: number) => {
+    setReturnItems(prev => ({
+      ...prev,
+      [itemType]: Math.max(0, (prev[itemType] || 0) + change)
+    }));
+  };
+
+  const handleProcessReturns = async () => {
+    try {
+      setIsProcessing(true);
+      for (const [itemType, quantity] of Object.entries(returnItems)) {
+        if (quantity > 0) {
+          await processItemReturn(itemType, quantity);
+        }
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error processing returns:', error);
+      alert('Failed to process returns');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const processItemReturn = async (itemType: string, returnQuantity: number) => {
+    console.log(`🔄 Processing return of ${returnQuantity} ${itemType}`);
+    
+    // Create a return transaction (negative transaction)
+    const returnDescription = `Returned: ${returnQuantity} ${itemType}${returnQuantity > 1 ? 's' : ''}`;
+    
+    try {
+      // Add a return transaction with negative amount or zero amount
+      await addTransaction(client, returnDescription, 0);
+      
+      console.log(`✅ Successfully processed return of ${returnQuantity} ${itemType}`);
+    } catch (error) {
+      console.error(`❌ Failed to process return:`, error);
+      throw error;
+    }
+  };
+
+  // Helper function to calculate how much has already been returned
+  const getReturnedQuantity = (itemType: string): number => {
+    return clientTransactions
+      .filter(transaction => transaction.type === 'debt' && transaction.description.toLowerCase().includes('returned'))
+      .reduce((total, transaction) => {
+        const description = transaction.description.toLowerCase();
+        if (description.includes(itemType.toLowerCase())) {
+          // Extract quantity from return transaction
+          const match = description.match(/returned:\s*(\d+)\s+/);
+          if (match) {
+            return total + parseInt(match[1]);
+          }
+        }
+        return total;
+      }, 0);
+  };
+
+  // Get returnable items from transaction history
+  const returnableItems = getReturnableItems();
+  
+  // Filter out items that have already been returned
+  const availableItems: {[key: string]: {total: number, transactions: Array<{id: string, description: string, amount: number, quantity: number}>}} = {};
+  
+  Object.entries(returnableItems).forEach(([itemType, data]) => {
+    // Calculate net quantity (original - returned)
+    const returnedQuantity = getReturnedQuantity(itemType);
+    const availableQuantity = Math.max(0, data.total - returnedQuantity);
+    
+    if (availableQuantity > 0) {
+      availableItems[itemType] = {
+        ...data,
+        total: availableQuantity
+      };
+    }
+  });
+
         if (!quantityMatch) return;
         
         const quantity = parseInt(quantityMatch[1]);
@@ -262,7 +432,12 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
     }
   });
 
-  const itemOrder = ['Chopine', 'Bouteille'];
+  // Sort items by type (Chopine first, then bottle sizes)
+  const sortedItemTypes = Object.keys(availableItems).sort((a, b) => {
+    if (a.includes('Chopine') && !b.includes('Chopine')) return -1;
+    if (!a.includes('Chopine') && b.includes('Chopine')) return 1;
+    return a.localeCompare(b);
+  });
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
@@ -405,7 +580,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
                 </div>
               ) : (
                 <div className="space-y-4 mb-6">
-                  {itemOrder.filter(itemType => availableItems[itemType]).map((itemType) => {
+                  {sortedItemTypes.map((itemType) => {
                     const data = availableItems[itemType];
                     return (
                     <div key={itemType} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
