@@ -500,6 +500,10 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
                                   setIsProcessing(true);
                                   await processItemReturn(itemType, data.total);
                                   onClose();
+                                  // Reset calculator after settling individual item
+                                  if (onResetCalculator) {
+                                    onResetCalculator();
+                                  }
                                 } catch (error) {
                                   console.error('Error settling item type:', error);
                                   alert(`Failed to settle ${itemType}`);
