@@ -200,12 +200,8 @@ const CreditManagement: React.FC = () => {
     setCalculatorValue('0');
     setIsCalculatorActive(false);
     setLinkedClient(null);
-    // Close and reset the ClientSearchModal
+    // Force close and reset the ClientSearchModal
     setShowClientSearch(false);
-    // Force a small delay to ensure modal is fully closed before potential reopening
-    setTimeout(() => {
-      // This ensures the modal component is completely unmounted and remounted
-    }, 100);
   };
 
   const handleAddToClient = async (client: Client, description: string) => {
