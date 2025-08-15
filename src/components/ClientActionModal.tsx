@@ -215,6 +215,10 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
           await processItemReturn(itemType, quantity);
         }
       }
+      // Reset calculator after successful returns processing
+      if (onResetCalculator) {
+        onResetCalculator();
+      }
       onClose();
     } catch (error) {
       console.error('Error processing returns:', error);
