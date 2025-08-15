@@ -29,6 +29,17 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
   const [descriptionHistory, setDescriptionHistory] = useState<string[]>([]);
   const [pendingNumber, setPendingNumber] = useState('');
   const [error, setError] = useState('');
+
+  // Reset all state when modal is opened
+  React.useEffect(() => {
+    setDescription('');
+    setDescriptionHistory([]);
+    setPendingNumber('');
+    setError('');
+    setSearchQuery('');
+    setShowAddClient(false);
+    setNewClientName('');
+  }, []); // Empty dependency array means this runs once when component mounts
   
   const filteredClients = searchClients(searchQuery).sort((a, b) => 
     a.name.localeCompare(b.name)
