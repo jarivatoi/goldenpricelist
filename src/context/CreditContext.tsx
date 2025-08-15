@@ -18,6 +18,9 @@ interface CreditContextType {
   getClientTransactions: (clientId: string) => Transaction[];
   getClientPayments: (clientId: string) => Payment[];
   
+  // Client update operations
+  updateClient: (client: Client) => Promise<void>;
+  
   // Transaction operations
   addTransaction: (client: Client, description: string, amount: number) => Promise<void>;
   
@@ -154,6 +157,28 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       setClients(prev => [...prev, newClient]);
     } catch (err) {
       console.error('Error adding client:', err);
+      throw err;
+    }
+  };
+
+  // Update existing client
+  const updateClient = async (client: Client) => {
+    try {
+      const { error } = await supabase
+        .from('credit_clients')
+        .update({
+          name: client.name,
+          total_debt: client.totalDebt,
+          bottles_owed: JSON.stringify(client.bottlesOwed),
+          last_transaction_at: client.lastTransactionAt.toISOString()
+        })
+        .eq('id', client.id);
+
+      if (error) throw error;
+
+      setClients(prev => prev.map(c => c.id === client.id ? client : c));
+    } catch (err) {
+      console.error('Error updating client:', err);
       throw err;
     }
   };
@@ -367,6 +392,7 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
     loading,
     error,
     addClient,
+    updateClient,
     deleteClient,
     searchClients,
     getClientTotalDebt,
