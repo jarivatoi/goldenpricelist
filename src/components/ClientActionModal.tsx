@@ -263,175 +263,6 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
     }
   });
 
-        if (!quantityMatch) return;
-        
-        const quantity = parseInt(quantityMatch[1]);
-        const key = 'Chopine';
-        
-        console.log(`✅ Adding ${quantity} Chopine from: "${transaction.description}"`);
-        
-        if (!returnableItems[key]) {
-          returnableItems[key] = { total: 0, transactions: [] };
-        }
-        returnableItems[key].total += quantity;
-        returnableItems[key].transactions.push({
-          id: transaction.id,
-          description: transaction.description,
-          amount: transaction.amount,
-          quantity: quantity
-        });
-      });
-      
-      // Process Bouteille matches
-      bouteilleMatches.forEach(match => {
-        const quantityMatch = match.match(/(\d+)/);
-        if (!quantityMatch) return;
-        
-        const quantity = parseInt(quantityMatch[1]);
-        const key = 'Bouteille';
-        
-        console.log(`✅ Adding ${quantity} Bouteille from: "${transaction.description}"`);
-        
-        if (!returnableItems[key]) {
-          returnableItems[key] = { total: 0, transactions: [] };
-        }
-        returnableItems[key].total += quantity;
-        returnableItems[key].transactions.push({
-          id: transaction.id,
-          description: transaction.description,
-          amount: transaction.amount,
-          quantity: quantity
-        });
-      });
-      
-      // Check for items without explicit numbers (assume quantity 1)
-      if (description.includes('bouteille') && bouteilleMatches.length === 0) {
-        const key = 'Bouteille';
-        console.log(`✅ Adding 1 Bouteille (no number) from: "${transaction.description}"`);
-        
-        if (!returnableItems[key]) {
-          returnableItems[key] = { total: 0, transactions: [] };
-        }
-        returnableItems[key].total += 1;
-        returnableItems[key].transactions.push({
-          id: transaction.id,
-          description: transaction.description,
-          amount: transaction.amount,
-          quantity: 1
-        });
-      }
-      
-      if (description.includes('chopine') && chopineMatches.length === 0) {
-        const key = 'Chopine';
-        console.log(`✅ Adding 1 Chopine (no number) from: "${transaction.description}"`);
-        
-        if (!returnableItems[key]) {
-          returnableItems[key] = { total: 0, transactions: [] };
-        }
-        returnableItems[key].total += 1;
-        returnableItems[key].transactions.push({
-          id: transaction.id,
-          description: transaction.description,
-          amount: transaction.amount,
-          quantity: 1
-        });
-      }
-    });
-    
-    console.log('🎯 Final returnable items:', returnableItems);
-    return returnableItems;
-  };
-
-  const handleReturnQuantityChange = (itemType: string, change: number) => {
-    setReturnItems(prev => ({
-      ...prev,
-      [itemType]: Math.max(0, (prev[itemType] || 0) + change)
-    }));
-  };
-
-  const handleProcessReturns = async () => {
-    try {
-      setIsProcessing(true);
-      for (const [itemType, quantity] of Object.entries(returnItems)) {
-        if (quantity > 0) {
-          await processItemReturn(itemType, quantity);
-        }
-      }
-      onClose();
-    } catch (error) {
-      console.error('Error processing returns:', error);
-      alert('Failed to process returns');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const processItemReturn = async (itemType: string, returnQuantity: number) => {
-    console.log(`🔄 Processing return of ${returnQuantity} ${itemType}`);
-    
-    // Create a return transaction (negative transaction)
-    const returnDescription = `Returned: ${returnQuantity} ${itemType}${returnQuantity > 1 ? 's' : ''}`;
-    
-    try {
-      // Add a return transaction with negative amount or zero amount
-      await addTransaction(client, returnDescription, 0);
-      
-      // Also update bottles owed if needed
-      const bottleUpdate: any = {};
-      if (itemType.toLowerCase() === 'chopine') {
-        bottleUpdate.chopines = returnQuantity;
-      } else if (itemType.toLowerCase() === 'bouteille') {
-        // Map to appropriate bottle type - you might need to adjust this
-        bottleUpdate.beer = returnQuantity; // or whatever bottle type is appropriate
-      }
-      
-      if (Object.keys(bottleUpdate).length > 0) {
-        await returnBottles(client.id, bottleUpdate);
-      }
-      
-      console.log(`✅ Successfully processed return of ${returnQuantity} ${itemType}`);
-    } catch (error) {
-      console.error(`❌ Failed to process return:`, error);
-      throw error;
-    }
-  };
-
-  // Helper function to calculate how much has already been returned
-  const getReturnedQuantity = (itemType: string): number => {
-    return clientTransactions
-      .filter(transaction => transaction.type === 'debt' && transaction.description.toLowerCase().includes('returned'))
-      .reduce((total, transaction) => {
-        const description = transaction.description.toLowerCase();
-        if (description.includes(itemType.toLowerCase())) {
-          // Extract quantity from return transaction
-          const match = description.match(/returned:\s*(\d+)\s+/);
-          if (match) {
-            return total + parseInt(match[1]);
-          }
-        }
-        return total;
-      }, 0);
-  };
-
-  // Get returnable items from transaction history
-  const returnableItems = getReturnableItems();
-  
-  // Filter out items that have already been returned
-  const availableItems: {[key: string]: {total: number, transactions: Array<{id: string, description: string, amount: number, quantity: number}>}} = {};
-  
-  Object.entries(returnableItems).forEach(([itemType, data]) => {
-    // Calculate net quantity (original - returned)
-    const returnedQuantity = getReturnedQuantity(itemType);
-    const availableQuantity = Math.max(0, data.total - returnedQuantity);
-    
-    if (availableQuantity > 0) {
-      availableItems[itemType] = {
-        ...data,
-        total: availableQuantity
-      };
-    }
-  });
-
   // Sort items by type (Chopine first, then bottle sizes)
   const sortedItemTypes = Object.keys(availableItems).sort((a, b) => {
     if (a.includes('Chopine') && !b.includes('Chopine')) return -1;
@@ -571,7 +402,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
                 >
                   <X size={20} />
                 </button>
-                <h3 className="text-lg font-medium text-gray-800 mb-4">Return Chopine & Bouteille</h3>
+                <h3 className="text-lg font-medium text-gray-800">Return Chopine & Bouteille</h3>
               </div>
               
               {Object.keys(availableItems).length === 0 ? (
@@ -622,7 +453,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose }
                         ))}
                       </div>
                     </div>
-                  )})}
+                  );})}
                   
                   <button
                     className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50"
