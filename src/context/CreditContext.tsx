@@ -274,15 +274,41 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       bottles.chopines += 1;
     }
 
-    // Parse Bouteille (map to beer)
-    const bouteilleMatches = lowercaseDesc.match(/(\d+)\s*bouteilles?/g) || [];
+    // Parse different bottle types
+    // 1.5L bottles
+    const bottle15LMatches = lowercaseDesc.match(/(\d+)\s*1\.5l/g) || [];
+    bottle15LMatches.forEach(match => {
+      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
+      bottles.malta += quantity; // Map 1.5L to malta
+    });
+
+    // 2L bottles  
+    const bottle2LMatches = lowercaseDesc.match(/(\d+)\s*2l/g) || [];
+    bottle2LMatches.forEach(match => {
+      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
+      bottles.coca += quantity; // Map 2L to coca
+    });
+
+    // 0.5L bottles
+    const bottle05LMatches = lowercaseDesc.match(/(\d+)\s*0\.5l/g) || [];
+    bottle05LMatches.forEach(match => {
+      const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
+      bottles.guinness += quantity; // Map 0.5L to guinness
+    });
+
+    // Regular Bouteille (without size specification) - map to beer
+    const bouteilleMatches = lowercaseDesc.match(/(\d+)\s*bouteilles?(?!\s*[0-9.]+l)/g) || [];
     bouteilleMatches.forEach(match => {
       const quantity = parseInt(match.match(/(\d+)/)?.[1] || '0');
       bottles.beer += quantity;
     });
 
-    // If description contains "bouteille" without number, assume 1
-    if (lowercaseDesc.includes('bouteille') && bouteilleMatches.length === 0) {
+    // If description contains "bouteille" without number and no size, assume 1 regular bottle
+    if (lowercaseDesc.includes('bouteille') && 
+        bouteilleMatches.length === 0 && 
+        bottle15LMatches.length === 0 && 
+        bottle2LMatches.length === 0 && 
+        bottle05LMatches.length === 0) {
       bottles.beer += 1;
     }
 
