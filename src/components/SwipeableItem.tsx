@@ -477,7 +477,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             transform: `translateX(${150 - revealWidth}px)`,
             // Smooth transitions when not actively dragging
             transition: (isAnimating || !isDragging) ? 'transform 0.3s ease-out' : 'none',
-            zIndex: 10
+            zIndex: 20
           }}
         >
           {/* Edit Button: Blue background with edit icon */}
