@@ -30,10 +30,16 @@ const CreditManagement: React.FC = () => {
   // Filter clients based on search
   const filteredClients = showAllClients 
     ? searchClients(searchQuery) // Show all clients when toggled
-    : searchClients(searchQuery).filter(client => getClientTotalDebt(client.id) > 0); // Show only clients with debt
+    : searchClients(searchQuery).filter(client => {
+        const totalDebt = getClientTotalDebt(client.id);
+        return totalDebt > 0;
+      }); // Show only clients with debt
   
   // Sort clients: maintain the order from context (which handles moveClientToFront)
-  const sortedClients = [...filteredClients];
+  const sortedClients = [...filteredClients].sort((a, b) => {
+    // Sort by last transaction date (most recent first)
+    return b.lastTransactionAt.getTime() - a.lastTransactionAt.getTime();
+  });
 
   /**
    * CALCULATOR FUNCTIONS
