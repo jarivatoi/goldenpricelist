@@ -42,6 +42,11 @@ const CreditManagement: React.FC = () => {
     return 0;
   });
 
+  // Calculate total debt across all clients
+  const totalDebtAllClients = clients.reduce((total, client) => {
+    return total + getClientTotalDebt(client.id);
+  }, 0);
+
   /**
    * CALCULATOR FUNCTIONS
    * ===================
@@ -321,7 +326,9 @@ const CreditManagement: React.FC = () => {
           
           {/* Header with Settings */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg lg:text-xl font-semibold text-gray-800">Golden Active Clients</h2>
+            <h2 className="text-lg lg:text-xl font-semibold text-gray-800">
+              Golden Active Clients (Rs {totalDebtAllClients.toFixed(2)})
+            </h2>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowAllClients(!showAllClients)}

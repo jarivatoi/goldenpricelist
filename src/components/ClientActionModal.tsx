@@ -541,11 +541,47 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
                       {/* Show recent transactions for this item type */}
                       <div className="text-xs text-gray-500">
                         <p className="font-medium mb-1">Recent transactions:</p>
-                        {data.transactions.slice(-2).map((transaction, index) => (
-                          <p key={index} className="truncate">
-                            • {transaction.description} ({transaction.quantity} {itemType})
-                          </p>
-                        ))}
+                        {data.transactions.slice(-2).map((transaction, index) => {
+                          const transactionDate = new Date(transaction.date || Date.now());
+                          return (
+                            <p key={index} className="truncate">
+                              • {transaction.description} ({transaction.quantity} {itemType}) - {transactionDate.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                              })} {transactionDate.toLocaleTimeString('en-GB', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                              })}
+                            </p>
+                          );
+                        })}
+                        
+                        {/* Show returned items for this type */}
+                        {(() => {
+                          const returnedTransactions = clientTransactions
+                            .filter(transaction => 
+                              transaction.type === 'debt' && 
+                              transaction.description.toLowerCase().includes('returned') &&
+                              transaction.description.toLowerCase().includes(itemType.toLowerCase())
+                            )
+                            .slice(-2); // Show last 2 returned transactions
+                          
+                          return returnedTransactions.map((transaction, index) => (
+                            <p key={`returned-${index}`} className="truncate text-green-600">
+                              • {transaction.description} - {transaction.date.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                              })} {transaction.date.toLocaleTimeString('en-GB', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                              })}
+                            </p>
+                          ));
+                        })()}
                       </div>
                     </div>
                   );})}
