@@ -168,8 +168,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       const id = `G${nextNumber.toString().padStart(3, '0')}`;
       
       // Check if client ID already exists
-      const existingClient = clients.find(c => c.id === id);
-      if (existingClient) {
+      const existingClientWithId = clients.find(c => c.id === id);
+      if (existingClientWithId) {
         const error = new Error(`Client with ID "${id}" already exists`);
         error.name = 'DuplicateClientError';
         throw error;
