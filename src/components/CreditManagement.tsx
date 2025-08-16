@@ -206,7 +206,6 @@ const CreditManagement: React.FC = () => {
     console.log('🔄 CreditManagement: Resetting calculator and closing modal');
     setCalculatorValue('0');
     setIsCalculatorActive(false);
-    setLinkedClient(null);
     setShowClientSearch(false);
   };
 
