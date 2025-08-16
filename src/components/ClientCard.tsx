@@ -145,7 +145,16 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd
       const returned = returnedQuantities[itemType] || 0;
       const remaining = Math.max(0, total - returned);
       if (remaining > 0) {
-        netReturnableItems.push(`${remaining} ${itemType}${remaining > 1 ? 's' : ''}`);
+        // Get the most recent transaction date for this item type
+        const recentTransaction = data.transactions
+          .sort((a, b) => new Date(b.date || Date.now()).getTime() - new Date(a.date || Date.now()).getTime())[0];
+        const transactionDate = recentTransaction ? new Date(recentTransaction.date || Date.now()) : new Date();
+        const dateStr = transactionDate.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+        netReturnableItems.push(`${remaining} ${itemType}${remaining > 1 ? 's' : ''} (${dateStr})`);
       }
     });
     
