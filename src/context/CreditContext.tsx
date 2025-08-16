@@ -206,7 +206,7 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
     }
   };
 
-  // Move client to front of list (rightmost position near calculator)
+  // Move client to end of list (rightmost position near calculator)
   const moveClientToFront = (clientId: string) => {
     const clientToMove = clients.find(c => c.id === clientId);
     if (!clientToMove) return;
