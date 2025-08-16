@@ -129,6 +129,7 @@ export const OverProvider: React.FC<{ children: React.ReactNode }> = ({ children
             };
           } catch (supabaseError) {
             console.warn('Failed to load from Supabase, falling back to localStorage:', supabaseError);
+            setError('Unable to connect to online data. Using offline data.');
             // Fallback to localStorage if Supabase fails
             const storedItems = localStorage.getItem('overItems');
             const overItems: OverItem[] = storedItems ? JSON.parse(storedItems).map((item: any) => ({
