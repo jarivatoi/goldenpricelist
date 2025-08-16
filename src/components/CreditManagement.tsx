@@ -404,13 +404,15 @@ const CreditManagement: React.FC = () => {
                 </p>
               )}
             </div>
-            <button
-              onClick={handleCalculatorCancel}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
-              title="Cancel and close modal"
-            >
-              <X size={20} />
-            </button>
+            {linkedClient && (
+              <button
+                onClick={handleCalculatorCancel}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+                title="Cancel link to client"
+              >
+                <X size={20} />
+              </button>
+            )}
           </div>
 
           {/* Calculator Display */}
