@@ -26,19 +26,33 @@ try {
     global: {
       fetch: (url, options = {}) => {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        // Longer timeout for mobile networks
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
         
         return fetch(url, {
           ...options,
           signal: controller.signal,
+          // Mobile Safari specific headers
+          headers: {
+            ...options.headers,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
         }).finally(() => {
           clearTimeout(timeoutId);
+        }).catch(error => {
+          console.error('🌐 Network error (Mobile Safari):', error);
+          if (error.name === 'AbortError') {
+            throw new Error('Request timeout - please check your connection and try again');
+          }
+          throw error;
         });
       },
     },
   });
+  console.log('✅ Supabase client initialized for mobile');
 } catch (error) {
-  console.error('Failed to initialize Supabase client:', error);
+  console.error('Failed to initialize Supabase client (Mobile):', error);
   supabase = null;
 }
 

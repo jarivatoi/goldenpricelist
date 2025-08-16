@@ -105,7 +105,23 @@ const AddItemForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('🚀 Form submission started:', { name, price, grossPrice });
+    console.log('🚀 Form submission started (Mobile):', { name, price, grossPrice });
+    
+    // Mobile Safari form validation
+    if (!name || name.trim().length === 0) {
+      setError('Please enter an item name');
+      return;
+    }
+    
+    if (!price || price.trim().length === 0) {
+      setError('Please enter a price');
+      return;
+    }
+    
+    if (!grossPrice || grossPrice.trim().length === 0) {
+      setError('Please enter a gross price');
+      return;
+    }
     
     // Validate item name
     if (!name.trim()) {
@@ -141,16 +157,22 @@ const AddItemForm: React.FC = () => {
       setIsSubmitting(true);
       setError('');
       
-      console.log('📝 Calling addItem with:', { 
+      console.log('📝 Calling addItem with (Mobile):', { 
         name: name.trim(), 
         price: Math.round(priceValue * 100) / 100, 
         grossPrice: Math.round(grossPriceValue * 100) / 100 
       });
       
-      // Add the item with price rounded to 2 decimal places
-      await addItem(name.trim(), Math.round(priceValue * 100) / 100, Math.round(grossPriceValue * 100) / 100);
+      // Mobile Safari: Add timeout wrapper
+      const addItemPromise = addItem(name.trim(), Math.round(priceValue * 100) / 100, Math.round(grossPriceValue * 100) / 100);
       
-      console.log('✅ Item added successfully, resetting form');
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Operation timed out. Please try again.')), 20000);
+      });
+      
+      await Promise.race([addItemPromise, timeoutPromise]);
+      
+      console.log('✅ Item added successfully (Mobile), resetting form');
       // Reset form on successful submission
       setName('');
       setPrice('');
@@ -158,8 +180,20 @@ const AddItemForm: React.FC = () => {
       setIsFormVisible(false);
     } catch (err) {
       // Handle submission errors
-      console.error('❌ Form submission error:', err);
-      setError('Failed to add item. Please try again.');
+      console.error('❌ Form submission error (Mobile):', err);
+      
+      // Mobile-specific error messages
+      if (err instanceof Error) {
+        if (err.message.includes('timeout') || err.message.includes('network')) {
+          setError('Connection timeout. Please check your internet and try again.');
+        } else if (err.message.includes('duplicate')) {
+          setError('This item already exists in your price list.');
+        } else {
+          setError(err.message || 'Failed to add item. Please try again.');
+        }
+      } else {
+        setError('Failed to add item. Please try again.');
+      }
     } finally {
       // Always clear loading state
       setIsSubmitting(false);

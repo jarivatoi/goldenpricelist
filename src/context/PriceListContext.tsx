@@ -343,9 +343,23 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
    */
   const addItem = async (name: string, price: number, grossPrice: number) => {
     try {
-      console.log('🔍 Adding item:', { name, price, grossPrice });
+      console.log('🔍 Adding item (Mobile Safari):', { name, price, grossPrice });
       
       const capitalizedName = capitalizeWords(name);
+      
+      // Mobile Safari validation
+      if (!capitalizedName || capitalizedName.trim().length === 0) {
+        throw new Error('Item name is required');
+      }
+      
+      if (isNaN(price) || price <= 0) {
+        throw new Error('Valid price is required');
+      }
+      
+      if (isNaN(grossPrice) || grossPrice <= 0) {
+        throw new Error('Valid gross price is required');
+      }
+      
       const newItem: PriceItem = {
         id: crypto.randomUUID(),
         name: capitalizedName,
@@ -356,7 +370,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       if (supabase) {
         // Add to Supabase
-        console.log('📤 Sending to Supabase:', {
+        console.log('📤 Sending to Supabase (Mobile):', {
           id: newItem.id,
           name: newItem.name,
           price: newItem.price,
@@ -364,7 +378,8 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           created_at: newItem.createdAt.toISOString()
         });
         
-        const { error } = await supabase
+        // Mobile Safari timeout handling
+        const insertPromise = supabase
           .from('price_items')
           .insert({
             id: newItem.id,
@@ -374,14 +389,31 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             created_at: newItem.createdAt.toISOString()
           });
         
+        // Add timeout for mobile networks
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout - please check your connection')), 15000);
+        });
+        
+        const { error } = await Promise.race([insertPromise, timeoutPromise]);
+        
         if (error) {
-          console.error('❌ Supabase error:', error);
+          console.error('❌ Supabase error (Mobile):', error);
+          
+          // Mobile-specific error handling
+          if (error.message?.includes('timeout') || error.message?.includes('network')) {
+            throw new Error('Network error. Please check your internet connection and try again.');
+          }
+          
+          if (error.message?.includes('duplicate') || error.code === '23505') {
+            throw new Error('An item with this name already exists.');
+          }
+          
           throw error;
         }
         
         // Update local state
         setItems(prev => [newItem, ...prev]);
-        console.log('✅ Item added to Supabase successfully:', newItem);
+        console.log('✅ Item added to Supabase successfully (Mobile):', newItem);
       } else {
         // Fallback to localStorage
         const updatedItems = [newItem, ...items];
