@@ -300,22 +300,18 @@ const CreditManagement: React.FC = () => {
       const year = now.getFullYear();
       const dateString = `${day}-${month}-${year}`;
       
-      // Get all data from localStorage
+      // Get only credit data from localStorage
       const clientsData = localStorage.getItem('creditClients');
       const transactionsData = localStorage.getItem('creditTransactions');
       const paymentsData = localStorage.getItem('creditPayments');
-      const priceItemsData = localStorage.getItem('priceListItems');
-      const overItemsData = localStorage.getItem('overItems');
       
       const exportData = {
         version: '1.0',
         exportDate: new Date().toISOString(),
-        database: {
+        creditDatabase: {
           creditClients: clientsData ? JSON.parse(clientsData) : [],
           creditTransactions: transactionsData ? JSON.parse(transactionsData) : [],
-          creditPayments: paymentsData ? JSON.parse(paymentsData) : [],
-          priceListItems: priceItemsData ? JSON.parse(priceItemsData) : [],
-          overItems: overItemsData ? JSON.parse(overItemsData) : []
+          creditPayments: paymentsData ? JSON.parse(paymentsData) : []
         }
       };
       
@@ -325,7 +321,7 @@ const CreditManagement: React.FC = () => {
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `GoldenPricelist_Database_${dateString}.json`;
+      link.download = `GoldenPricelist_Credit_${dateString}.json`;
       
       document.body.appendChild(link);
       link.click();
@@ -333,9 +329,9 @@ const CreditManagement: React.FC = () => {
       
       URL.revokeObjectURL(url);
       setShowDatabaseMenu(false);
-      alert('Database exported successfully!');
+      alert('Credit database exported successfully!');
     } catch (error) {
-      alert('Error exporting database. Please try again.');
+      alert('Error exporting credit database. Please try again.');
     }
   };
 
@@ -355,40 +351,34 @@ const CreditManagement: React.FC = () => {
           const content = e.target?.result as string;
           const data = JSON.parse(content);
           
-          if (!data.database) {
-            throw new Error('Invalid database file format');
+          if (!data.creditDatabase) {
+            throw new Error('Invalid credit database file format');
           }
 
           const confirmImport = window.confirm(
-            `This will replace ALL your current data with the imported database. This action cannot be undone. Are you sure you want to continue?`
+            `This will replace ALL your current credit data (clients, transactions, payments) with the imported database. This action cannot be undone. Are you sure you want to continue?`
           );
 
           if (confirmImport) {
-            // Import all data to localStorage
-            if (data.database.creditClients) {
-              localStorage.setItem('creditClients', JSON.stringify(data.database.creditClients));
+            // Import only credit data to localStorage
+            if (data.creditDatabase.creditClients) {
+              localStorage.setItem('creditClients', JSON.stringify(data.creditDatabase.creditClients));
             }
-            if (data.database.creditTransactions) {
-              localStorage.setItem('creditTransactions', JSON.stringify(data.database.creditTransactions));
+            if (data.creditDatabase.creditTransactions) {
+              localStorage.setItem('creditTransactions', JSON.stringify(data.creditDatabase.creditTransactions));
             }
-            if (data.database.creditPayments) {
-              localStorage.setItem('creditPayments', JSON.stringify(data.database.creditPayments));
-            }
-            if (data.database.priceListItems) {
-              localStorage.setItem('priceListItems', JSON.stringify(data.database.priceListItems));
-            }
-            if (data.database.overItems) {
-              localStorage.setItem('overItems', JSON.stringify(data.database.overItems));
+            if (data.creditDatabase.creditPayments) {
+              localStorage.setItem('creditPayments', JSON.stringify(data.creditDatabase.creditPayments));
             }
             
             setShowDatabaseMenu(false);
-            alert('Database imported successfully! Please refresh the page to see the changes.');
+            alert('Credit database imported successfully! Please refresh the page to see the changes.');
             
             // Refresh the page to reload all data
             window.location.reload();
           }
         } catch (error) {
-          alert('Error importing database file. Please check the file format and try again.');
+          alert('Error importing credit database file. Please check the file format and try again.');
         }
       };
       
@@ -468,7 +458,7 @@ const CreditManagement: React.FC = () => {
                         className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
                       >
                         <Download size={16} className="mr-3 text-green-600" />
-                        Export Complete Database
+                        Export Credit Database
                       </button>
                       
                       <button
@@ -476,7 +466,7 @@ const CreditManagement: React.FC = () => {
                         className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
                       >
                         <Upload size={16} className="mr-3 text-blue-600" />
-                        Import Complete Database
+                        Import Credit Database
                       </button>
                     </div>
                     
@@ -484,8 +474,8 @@ const CreditManagement: React.FC = () => {
                       <div className="text-xs text-gray-500">
                         <p className="font-medium mb-1">Includes:</p>
                         <p>• All clients and transactions</p>
-                        <p>• Price list items</p>
-                        <p>• Over/inventory items</p>
+                        <p>• Payment history</p>
+                        <p>• Credit records only</p>
                       </div>
                     </div>
                   </div>
