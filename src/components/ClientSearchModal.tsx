@@ -212,7 +212,14 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
             <input
               type="text"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                // Auto-capitalize as user types
+                const formatted = e.target.value
+                  .split(' ')
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                  .join(' ');
+                setDescription(formatted);
+              }}
               placeholder="Enter item or service description..."
               className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
