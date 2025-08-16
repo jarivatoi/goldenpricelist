@@ -110,21 +110,6 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
             <p className="text-gray-600">Client ID: {client.id}</p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Quick Add Button */}
-            {onQuickAdd && (
-              <button
-                onClick={() => {
-                  onQuickAdd(client);
-                  onClose(); // Close the modal after quick add
-                }}
-                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition-colors flex items-center gap-2"
-                title={`Add transaction for ${client.name}`}
-              >
-                <Plus size={20} />
-                <span className="text-sm font-medium">Quick Add</span>
-              </button>
-            )}
-            
             {/* Close Button */}
             <button 
               onClick={onClose}
