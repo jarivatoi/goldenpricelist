@@ -264,6 +264,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Add transaction
   const addTransaction = async (client: Client, description: string, amount: number) => {
     try {
+      console.log('🏦 CreditContext: Adding transaction:', { clientId: client.id, description, amount });
+      
       // Add transaction to database
       const { error: transactionError } = await supabase
         .from('credit_transactions')
@@ -276,8 +278,9 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
 
       if (transactionError) throw transactionError;
 
-      // Parse bottles from description
+      console.log('🏦 CreditContext: Transaction added to database successfully');
 
+      // Update client's total debt (even if amount is 0, we still update last transaction time)
       const { error: clientError } = await supabase
         .from('credit_clients')
         .update({
@@ -288,8 +291,12 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
 
       if (clientError) throw clientError;
 
+      console.log('🏦 CreditContext: Client debt updated successfully');
+      
       // Refresh data
       await refreshData();
+      
+      console.log('🏦 CreditContext: Data refreshed successfully');
     } catch (err) {
       console.error('Error adding transaction:', err);
       throw err;
