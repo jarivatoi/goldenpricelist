@@ -62,67 +62,34 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      // Check if Supabase client is available
-      if (!supabase) {
-        throw new Error('Supabase client not initialized. Please check your configuration.');
-      }
-
-      // Load clients
-      const { data: clientsData, error: clientsError } = await supabase
-        .from('credit_clients')
-        .select('*')
-        .order('name');
-
-      if (clientsError) throw clientsError;
-
-      // Load transactions
-      const { data: transactionsData, error: transactionsError } = await supabase
-        .from('credit_transactions')
-        .select('*')
-        .order('date', { ascending: false });
-
-      if (transactionsError) throw transactionsError;
-
-      // Load payments
-      const { data: paymentsData, error: paymentsError } = await supabase
-        .from('credit_payments')
-        .select('*')
-        .order('date', { ascending: false });
-
-      if (paymentsError) throw paymentsError;
-
-      // Transform data
-      const transformedClients: Client[] = (clientsData || []).map(client => ({
-        id: client.id,
-        name: client.name,
-        totalDebt: client.total_debt || 0,
-        createdAt: new Date(client.created_at),
-        lastTransactionAt: new Date(client.last_transaction_at),
-        bottlesOwed: typeof client.bottles_owed === 'string' 
-          ? JSON.parse(client.bottles_owed)
-          : client.bottles_owed || { beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 }
-      }));
-
-      const transformedTransactions: Transaction[] = (transactionsData || []).map(transaction => ({
-        id: transaction.id,
-        clientId: transaction.client_id,
-        description: transaction.description,
-        amount: transaction.amount,
-        date: new Date(transaction.date),
-        type: transaction.type as 'debt' | 'payment'
-      }));
-
-      const transformedPayments: Payment[] = (paymentsData || []).map(payment => ({
-        id: payment.id,
-        clientId: payment.client_id,
-        amount: payment.amount,
-        date: new Date(payment.date),
-        type: payment.type as 'partial' | 'full'
-      }));
-
+      // Load from localStorage
+      console.log('Using localStorage for credit data');
+      
+      const storedClients = localStorage.getItem('creditClients');
+      const storedTransactions = localStorage.getItem('creditTransactions');
+      const storedPayments = localStorage.getItem('creditPayments');
+      
+      const transformedClients: Client[] = storedClients ? JSON.parse(storedClients).map((client: any) => ({
+        ...client,
+        createdAt: new Date(client.createdAt),
+        lastTransactionAt: new Date(client.lastTransactionAt)
+      })) : [];
+      
+      const transformedTransactions: Transaction[] = storedTransactions ? JSON.parse(storedTransactions).map((transaction: any) => ({
+        ...transaction,
+        date: new Date(transaction.date)
+      })) : [];
+      
+      const transformedPayments: Payment[] = storedPayments ? JSON.parse(storedPayments).map((payment: any) => ({
+        ...payment,
+        date: new Date(payment.date)
+      })) : [];
+      
       setClients(transformedClients);
       setTransactions(transformedTransactions);
       setPayments(transformedPayments);
+      
+      console.log(`Loaded ${transformedClients.length} clients, ${transformedTransactions.length} transactions, ${transformedPayments.length} payments from localStorage`);
     } catch (err) {
       console.error('Error loading credit data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -180,17 +147,6 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         throw error;
       }
       
-      const { error } = await supabase
-        .from('credit_clients')
-        .insert({
-          id,
-          name: formattedName,
-          total_debt: 0,
-          bottles_owed: JSON.stringify({ beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 })
-        });
-
-      if (error) throw error;
-
       const newClient: Client = {
         id,
         name: formattedName,
@@ -200,7 +156,15 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         bottlesOwed: { beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 }
       };
 
-      setClients(prev => [...prev, newClient]);
+      const updatedClients = [...clients, newClient];
+      setClients(updatedClients);
+      
+      // Save to localStorage
+      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
+        ...client,
+        createdAt: client.createdAt.toISOString(),
+        lastTransactionAt: client.lastTransactionAt.toISOString()
+      }))));
       
       return newClient;
     } catch (err) {
@@ -215,19 +179,15 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Update existing client
   const updateClient = async (client: Client) => {
     try {
-      const { error } = await supabase
-        .from('credit_clients')
-        .update({
-          name: client.name,
-          total_debt: client.totalDebt,
-          bottles_owed: JSON.stringify(client.bottlesOwed),
-          last_transaction_at: client.lastTransactionAt.toISOString()
-        })
-        .eq('id', client.id);
-
-      if (error) throw error;
-
-      setClients(prev => prev.map(c => c.id === client.id ? client : c));
+      const updatedClients = clients.map(c => c.id === client.id ? client : c);
+      setClients(updatedClients);
+      
+      // Save to localStorage
+      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(c => ({
+        ...c,
+        createdAt: c.createdAt.toISOString(),
+        lastTransactionAt: c.lastTransactionAt.toISOString()
+      }))));
     } catch (err) {
       console.error('Error updating client:', err);
       throw err;
@@ -237,16 +197,30 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Delete client
   const deleteClient = async (clientId: string) => {
     try {
-      const { error } = await supabase
-        .from('credit_clients')
-        .delete()
-        .eq('id', clientId);
-
-      if (error) throw error;
-
-      setClients(prev => prev.filter(client => client.id !== clientId));
-      setTransactions(prev => prev.filter(transaction => transaction.clientId !== clientId));
-      setPayments(prev => prev.filter(payment => payment.clientId !== clientId));
+      const updatedClients = clients.filter(client => client.id !== clientId);
+      const updatedTransactions = transactions.filter(transaction => transaction.clientId !== clientId);
+      const updatedPayments = payments.filter(payment => payment.clientId !== clientId);
+      
+      setClients(updatedClients);
+      setTransactions(updatedTransactions);
+      setPayments(updatedPayments);
+      
+      // Save to localStorage
+      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
+        ...client,
+        createdAt: client.createdAt.toISOString(),
+        lastTransactionAt: client.lastTransactionAt.toISOString()
+      }))));
+      
+      localStorage.setItem('creditTransactions', JSON.stringify(updatedTransactions.map(transaction => ({
+        ...transaction,
+        date: transaction.date.toISOString()
+      }))));
+      
+      localStorage.setItem('creditPayments', JSON.stringify(updatedPayments.map(payment => ({
+        ...payment,
+        date: payment.date.toISOString()
+      }))));
     } catch (err) {
       console.error('Error deleting client:', err);
       throw err;
@@ -292,36 +266,42 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       console.log('🏦 CreditContext: Adding transaction:', { clientId: client.id, description, amount });
       
       // Add transaction to database
-      const { error: transactionError } = await supabase
-        .from('credit_transactions')
-        .insert({
-          client_id: client.id,
-          description,
-          amount,
-          type: 'debt'
-        });
-
-      if (transactionError) throw transactionError;
-
-      console.log('🏦 CreditContext: Transaction added to database successfully');
-
-      // Update client's total debt (even if amount is 0, we still update last transaction time)
-      const { error: clientError } = await supabase
-        .from('credit_clients')
-        .update({
-          total_debt: getClientTotalDebt(client.id) + amount,
-          last_transaction_at: new Date().toISOString()
-        })
-        .eq('id', client.id);
-
-      if (clientError) throw clientError;
-
-      console.log('🏦 CreditContext: Client debt updated successfully');
+      const newTransaction: Transaction = {
+        id: crypto.randomUUID(),
+        clientId: client.id,
+        description,
+        amount,
+        date: new Date(),
+        type: 'debt'
+      };
       
-      // Refresh data
-      await refreshData();
+      const updatedTransactions = [...transactions, newTransaction];
+      setTransactions(updatedTransactions);
       
-      console.log('🏦 CreditContext: Data refreshed successfully');
+      // Update client's total debt and last transaction time
+      const updatedClient = {
+        ...client,
+        totalDebt: getClientTotalDebt(client.id) + amount,
+        lastTransactionAt: new Date()
+      };
+      
+      const updatedClients = clients.map(c => c.id === client.id ? updatedClient : c);
+      setClients(updatedClients);
+      
+      // Save to localStorage
+      localStorage.setItem('creditTransactions', JSON.stringify(updatedTransactions.map(transaction => ({
+        ...transaction,
+        date: transaction.date.toISOString()
+      }))));
+      
+      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(c => ({
+        ...c,
+        createdAt: c.createdAt.toISOString(),
+        lastTransactionAt: c.lastTransactionAt.toISOString()
+      }))));
+      
+      console.log('🏦 CreditContext: Transaction added to localStorage successfully');
+      
     } catch (err) {
       console.error('Error adding transaction:', err);
       throw err;
@@ -337,33 +317,38 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Add partial payment
   const addPartialPayment = async (clientId: string, amount: number) => {
     try {
-      // Add payment to database
-      const { error: paymentError } = await supabase
-        .from('credit_payments')
-        .insert({
-          client_id: clientId,
-          amount,
-          type: 'partial'
-        });
-
-      if (paymentError) throw paymentError;
-
-      // Update client's total debt
+      const newPayment: Payment = {
+        id: crypto.randomUUID(),
+        clientId,
+        amount,
+        date: new Date(),
+        type: 'partial'
+      };
+      
+      const updatedPayments = [...payments, newPayment];
+      setPayments(updatedPayments);
+      
       const currentDebt = getClientTotalDebt(clientId);
       const newDebt = Math.max(0, currentDebt - amount);
-
-      const { error: clientError } = await supabase
-        .from('credit_clients')
-        .update({
-          total_debt: newDebt,
-          last_transaction_at: new Date().toISOString()
-        })
-        .eq('id', clientId);
-
-      if (clientError) throw clientError;
-
-      // Refresh data
-      await refreshData();
+      
+      const updatedClients = clients.map(client => 
+        client.id === clientId 
+          ? { ...client, totalDebt: newDebt, lastTransactionAt: new Date() }
+          : client
+      );
+      setClients(updatedClients);
+      
+      // Save to localStorage
+      localStorage.setItem('creditPayments', JSON.stringify(updatedPayments.map(payment => ({
+        ...payment,
+        date: payment.date.toISOString()
+      }))));
+      
+      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
+        ...client,
+        createdAt: client.createdAt.toISOString(),
+        lastTransactionAt: client.lastTransactionAt.toISOString()
+      }))));
     } catch (err) {
       console.error('Error adding partial payment:', err);
       throw err;
@@ -375,33 +360,43 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
     try {
       const currentDebt = getClientTotalDebt(clientId);
       
+      let updatedPayments = payments;
       if (currentDebt > 0) {
-        // Add full payment
-        const { error: paymentError } = await supabase
-          .from('credit_payments')
-          .insert({
-            client_id: clientId,
-            amount: currentDebt,
-            type: 'full'
-          });
-
-        if (paymentError) throw paymentError;
+        const newPayment: Payment = {
+          id: crypto.randomUUID(),
+          clientId,
+          amount: currentDebt,
+          date: new Date(),
+          type: 'full'
+        };
+        
+        updatedPayments = [...payments, newPayment];
+        setPayments(updatedPayments);
       }
-
-      // Reset client debt and bottles
-      const { error: clientError } = await supabase
-        .from('credit_clients')
-        .update({
-          total_debt: 0,
-          last_transaction_at: new Date().toISOString(),
-          bottles_owed: JSON.stringify({ beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 })
-        })
-        .eq('id', clientId);
-
-      if (clientError) throw clientError;
-
-      // Refresh data
-      await refreshData();
+      
+      const updatedClients = clients.map(client => 
+        client.id === clientId 
+          ? { 
+              ...client, 
+              totalDebt: 0, 
+              lastTransactionAt: new Date(),
+              bottlesOwed: { beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 }
+            }
+          : client
+      );
+      setClients(updatedClients);
+      
+      // Save to localStorage
+      localStorage.setItem('creditPayments', JSON.stringify(updatedPayments.map(payment => ({
+        ...payment,
+        date: payment.date.toISOString()
+      }))));
+      
+      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
+        ...client,
+        createdAt: client.createdAt.toISOString(),
+        lastTransactionAt: client.lastTransactionAt.toISOString()
+      }))));
     } catch (err) {
       console.error('Error settling client:', err);
       throw err;
@@ -419,19 +414,20 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         coca: Math.max(0, currentBottles.coca - (returnedBottles.coca || 0)),
         chopines: Math.max(0, currentBottles.chopines - (returnedBottles.chopines || 0))
       };
-
-      const { error } = await supabase
-        .from('credit_clients')
-        .update({
-          bottles_owed: JSON.stringify(newBottles),
-          last_transaction_at: new Date().toISOString()
-        })
-        .eq('id', clientId);
-
-      if (error) throw error;
-
-      // Refresh data
-      await refreshData();
+      
+      const updatedClients = clients.map(client => 
+        client.id === clientId 
+          ? { ...client, bottlesOwed: newBottles, lastTransactionAt: new Date() }
+          : client
+      );
+      setClients(updatedClients);
+      
+      // Save to localStorage
+      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
+        ...client,
+        createdAt: client.createdAt.toISOString(),
+        lastTransactionAt: client.lastTransactionAt.toISOString()
+      }))));
     } catch (err) {
       console.error('Error returning bottles:', err);
       throw err;
