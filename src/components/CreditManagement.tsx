@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Calculator, Plus, Minus, X, Settings, Trash2, AlertTriangle } from 'lucide-react';
+import { Search, Calculator, Plus, Minus, X, Settings, Trash2, AlertTriangle, Users, UserCheck } from 'lucide-react';
 import { useCredit } from '../context/CreditContext';
 import ClientCard from './ClientCard';
 import ClientDetailModal from './ClientDetailModal';
@@ -319,13 +319,26 @@ const CreditManagement: React.FC = () => {
           {/* Header with Settings */}
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg lg:text-xl font-semibold text-gray-800">Golden Active Clients</h2>
-            <button
-              onClick={() => setShowSettings(true)}
-              className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Client Settings"
-            >
-              <Settings size={20} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowAllClients(!showAllClients)}
+                className={`p-2 rounded-lg transition-colors ${
+                  showAllClients 
+                    ? 'text-blue-600 bg-blue-100 hover:bg-blue-200' 
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+                title={showAllClients ? 'Show Active Clients Only' : 'Show All Clients'}
+              >
+                {showAllClients ? <Users size={20} /> : <UserCheck size={20} />}
+              </button>
+              <button
+                onClick={() => setShowSettings(true)}
+                className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Client Settings"
+              >
+                <Settings size={20} />
+              </button>
+            </div>
           </div>
           
           {/* Client Cards - Horizontal Scroll */}
@@ -373,19 +386,6 @@ const CreditManagement: React.FC = () => {
             />
           </div>
 
-          {/* Toggle to show all clients */}
-          <div className="flex justify-center mt-3">
-            <button
-              onClick={() => setShowAllClients(!showAllClients)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                showAllClients 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {showAllClients ? 'Show Active Only' : 'Show All Clients'}
-            </button>
-          </div>
         </div>
 
         {/* Right Side - Calculator Section */}
