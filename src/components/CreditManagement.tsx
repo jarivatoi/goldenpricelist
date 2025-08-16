@@ -709,8 +709,8 @@ const CreditManagement: React.FC = () => {
                 </div>
                 
                 {getClientTotalDebt(clientToDelete.id) > 0 && (
-                        ? (searchQuery ? `No clients found matching "${searchQuery}"` : 'No clients found') 
-                        : (searchQuery ? `No clients found matching "${searchQuery}"` : 'No clients found')
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                    <p className="text-yellow-800 font-medium">
                       ⚠️ Client has outstanding debt: Rs {getClientTotalDebt(clientToDelete.id).toFixed(2)}
                     </p>
                   </div>
