@@ -165,13 +165,13 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
                         transaction.description.toLowerCase().includes('returned')
                           ? 'text-green-600'
                           : transaction.amount === 0
-                          ? 'text-orange-600'
+                          ? 'text-transparent'
                           : 'text-red-600'
                       }`}>
                         {transaction.description.toLowerCase().includes('returned')
                           ? 'Returned'
                           : transaction.amount === 0
-                          ? 'No Charge'
+                          ? ' '
                           : `Rs ${transaction.amount.toFixed(2)}`
                         }
                       </span>
