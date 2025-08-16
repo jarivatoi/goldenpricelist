@@ -401,6 +401,9 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Settle client (full payment)
   const settleClient = async (clientId: string) => {
     try {
+      console.log('🏦 Settling client:', clientId);
+      console.log('🏦 Transactions before settle:', transactions.filter(t => t.clientId === clientId).length);
+      
       const currentDebt = getClientTotalDebt(clientId);
       
       let updatedPayments = payments;
@@ -419,6 +422,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       
       // Clear all transactions for this client when settling
       const updatedTransactions = transactions.filter(transaction => transaction.clientId !== clientId);
+      console.log('🏦 Transactions after filtering:', updatedTransactions.length);
+      console.log('🏦 Remaining transactions for this client:', updatedTransactions.filter(t => t.clientId === clientId).length);
       setTransactions(updatedTransactions);
       
       const updatedClients = clients.map(client => 
@@ -449,6 +454,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         createdAt: client.createdAt.toISOString(),
         lastTransactionAt: client.lastTransactionAt.toISOString()
       }))));
+      
+      console.log('🏦 Settlement completed for client:', clientId);
     } catch (err) {
       console.error('Error settling client:', err);
       throw err;
