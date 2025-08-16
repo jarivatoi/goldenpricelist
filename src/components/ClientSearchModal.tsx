@@ -446,7 +446,6 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
   return createPortal(modalContent, document.body);
 };
 
-export default ClientSearchModal;
 
 
 export default ClientSearchModal
