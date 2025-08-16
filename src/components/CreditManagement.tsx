@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, Calculator, Plus, Minus, X, Settings, Trash2, AlertTriangle, Users, UserCheck } from 'lucide-react';
 import { useCredit } from '../context/CreditContext';
 import ClientCard from './ClientCard';
@@ -614,7 +615,8 @@ const CreditManagement: React.FC = () => {
 
       {/* Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        createPortal(
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" style={{ height: '100vh' }}>
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden">
             
             {/* Header */}
@@ -667,12 +669,15 @@ const CreditManagement: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
+        )
       )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && clientToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        createPortal(
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" style={{ height: '100vh' }}>
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden">
             
             {/* Header */}
@@ -746,7 +751,9 @@ const CreditManagement: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
+        )
       )}
 
       {showClientSearch && (

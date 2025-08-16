@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, CreditCard, CheckCircle, DollarSign, RotateCcw, Minus, Plus } from 'lucide-react';
 import { Client } from '../types';
 import { useCredit } from '../context/CreditContext';
@@ -295,8 +296,8 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
     return a.localeCompare(b);
   });
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" style={{ height: '100vh' }}>
       <div className="bg-white rounded-t-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -568,6 +569,8 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default ClientActionModal;

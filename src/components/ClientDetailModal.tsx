@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar, Receipt, CreditCard, Plus, Edit2 } from 'lucide-react';
 import { Client } from '../types';
 import { useCredit } from '../context/CreditContext';
@@ -70,8 +71,8 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
     setEditedName(client.name);
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" style={{ height: '100vh' }}>
       <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
         
         {/* Header */}
@@ -266,6 +267,8 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default ClientDetailModal;

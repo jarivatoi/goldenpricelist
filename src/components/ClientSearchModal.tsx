@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Search, Plus, User } from 'lucide-react';
 import { useCredit } from '../context/CreditContext';
 import { Client } from '../types';
@@ -156,8 +157,8 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" style={{ height: '100vh' }}>
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg max-h-[80vh] overflow-hidden">
         
         {/* Header */}
@@ -427,6 +428,8 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default ClientSearchModal;
