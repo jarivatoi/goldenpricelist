@@ -174,20 +174,23 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
                   <div key={transaction.id} className="bg-gray-50 rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-medium text-gray-800">{transaction.description}</h4>
-                      <span className={`text-lg font-semibold ${
-                        transaction.description.toLowerCase().includes('returned')
-                          ? 'text-green-600'
-                          : transaction.amount === 0
-                          ? 'text-gray-500'
-                          : 'text-red-600'
-                      }`}>
-                        {transaction.description.toLowerCase().includes('returned')
-                          ? 'Returned'
-                          : transaction.amount === 0
-                          ? 'Rs 0.00'
-                          : `Rs ${transaction.amount.toFixed(2)}`
-                        }
-                      </span>
+                      {transaction.amount > 0 && (
+                        <span className={`text-lg font-semibold ${
+                          transaction.description.toLowerCase().includes('returned')
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}>
+                          {transaction.description.toLowerCase().includes('returned')
+                            ? 'Returned'
+                            : `Rs ${transaction.amount.toFixed(2)}`
+                          }
+                        </span>
+                      )}
+                      {transaction.amount === 0 && transaction.description.toLowerCase().includes('returned') && (
+                        <span className="text-lg font-semibold text-green-600">
+                          Returned
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Calendar size={14} />
