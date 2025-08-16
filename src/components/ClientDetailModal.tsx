@@ -241,3 +241,5 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
 };
 
 export default ClientDetailModal;
+
+export default ClientDetailModal
