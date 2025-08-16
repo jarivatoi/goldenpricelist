@@ -417,6 +417,10 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         setPayments(updatedPayments);
       }
       
+      // Clear all transactions for this client when settling
+      const updatedTransactions = transactions.filter(transaction => transaction.clientId !== clientId);
+      setTransactions(updatedTransactions);
+      
       const updatedClients = clients.map(client => 
         client.id === clientId 
           ? { 
@@ -433,6 +437,11 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       localStorage.setItem('creditPayments', JSON.stringify(updatedPayments.map(payment => ({
         ...payment,
         date: payment.date.toISOString()
+      }))));
+      
+      localStorage.setItem('creditTransactions', JSON.stringify(updatedTransactions.map(transaction => ({
+        ...transaction,
+        date: transaction.date.toISOString()
       }))));
       
       localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
