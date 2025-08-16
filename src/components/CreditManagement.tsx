@@ -579,7 +579,14 @@ const CreditManagement: React.FC = () => {
           <button
             onClick={() => {
               if (linkedClient) {
-                // Show description input for linked client
+                // Get current calculator amount for linked client
+                const currentAmount = getCalculatorAmount();
+                if (currentAmount <= 0) {
+                  alert('Please enter an amount greater than 0');
+                  return;
+                }
+                
+                // Show description input for linked client with current amount
                 setTimeout(() => {
                   const description = prompt(`Enter description for ${linkedClient.name}:`);
                   if (description && description.trim()) {
@@ -595,7 +602,7 @@ const CreditManagement: React.FC = () => {
                 setShowClientSearch(true);
               }
             }}
-            disabled={calculatorValue === 'Error'}
+            disabled={calculatorValue === 'Error' || (linkedClient && getCalculatorAmount() <= 0)}
             className={`w-full ${linkedClient ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} disabled:bg-gray-300 disabled:cursor-not-allowed text-white p-4 rounded-lg font-semibold text-lg flex items-center justify-center gap-2`}
           >
             <Plus size={20} />
