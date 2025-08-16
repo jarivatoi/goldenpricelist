@@ -30,7 +30,7 @@ const CreditManagement: React.FC = () => {
   // Filter clients based on search
   const filteredClients = showAllClients 
     ? searchClients(searchQuery) // Show all clients when toggled
-    : searchClients(searchQuery); // Show all clients by default (including 0.00 amounts)
+    : searchClients(searchQuery).filter(client => getClientTotalDebt(client.id) > 0); // Show only clients with debt
   
   // Sort clients: maintain the order from context (which handles moveClientToFront)
   const sortedClients = [...filteredClients];
@@ -705,10 +705,12 @@ const CreditManagement: React.FC = () => {
                   </ul>
                 </div>
                 
-                {getClientTotalDebt(clientToDelete.id) > 0 && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                    <p className="text-yellow-800 font-medium">
-                      ⚠️ Client has outstanding debt: Rs {getClientTotalDebt(clientToDelete.id).toFixed(2)}
+                      {searchQuery 
+                        ? `No clients found matching "${searchQuery}"` 
+                        : showAllClients 
+                          ? 'No clients found'
+                          : 'No clients with outstanding debts'
+                      }
                     </p>
                   </div>
                 )}
