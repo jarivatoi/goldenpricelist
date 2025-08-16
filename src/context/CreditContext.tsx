@@ -62,6 +62,11 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
 
+      // Check if Supabase client is available
+      if (!supabase) {
+        throw new Error('Supabase client not initialized. Please check your configuration.');
+      }
+
       // Load clients
       const { data: clientsData, error: clientsError } = await supabase
         .from('credit_clients')

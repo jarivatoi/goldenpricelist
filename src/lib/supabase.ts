@@ -4,31 +4,45 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = 'https://nmlroqlmtelytoghuyos.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tbHJvcWxtdGVseXRvZ2h1eW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTA0OTgsImV4cCI6MjA3MDY4NjQ5OH0.qnAd6-BSzNMZux6RxtQmGr5OyPYkne--y1ekccVlCeE';
 
-// Initialize Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: true,
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
+// Initialize Supabase client with error handling
+let supabase: any = null;
+
+try {
+  // Validate configuration
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Missing Supabase configuration');
+  }
+
+  supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: true,
     },
-  },
-  global: {
-    fetch: (url, options = {}) => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
-      return fetch(url, {
-        ...options,
-        signal: controller.signal,
-      }).finally(() => {
-        clearTimeout(timeoutId);
-      });
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
     },
-  },
-});
+    global: {
+      fetch: (url, options = {}) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        return fetch(url, {
+          ...options,
+          signal: controller.signal,
+        }).finally(() => {
+          clearTimeout(timeoutId);
+        });
+      },
+    },
+  });
+} catch (error) {
+  console.error('Failed to initialize Supabase client:', error);
+  supabase = null;
+}
+
+export { supabase };
 
 
 // Database types for Golden Price List app
