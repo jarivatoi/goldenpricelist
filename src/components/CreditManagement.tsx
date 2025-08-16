@@ -33,10 +33,21 @@ const CreditManagement: React.FC = () => {
     : searchClients(searchQuery).filter(client => getClientTotalDebt(client.id) > 0); // Only active debtors
   
   // Sort clients: earliest debts on right, latest on left
-  const sortedClients = [...filteredClients]
-    .sort((a, b) => 
-    b.lastTransactionAt.getTime() - a.lastTransactionAt.getTime()
-  );
+  const sortedClients = [...filteredClients].sort((a, b) => {
+    const aDebt = getClientTotalDebt(a.id);
+    const bDebt = getClientTotalDebt(b.id);
+    
+    // If both have debt or both have no debt, sort by ID (stable order)
+    if ((aDebt > 0 && bDebt > 0) || (aDebt === 0 && bDebt === 0)) {
+      return a.id.localeCompare(b.id);
+    }
+    
+    // Clients with debt come first
+    if (aDebt > 0 && bDebt === 0) return -1;
+    if (aDebt === 0 && bDebt > 0) return 1;
+    
+    return 0;
+  });
 
   /**
    * CALCULATOR FUNCTIONS
