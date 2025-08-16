@@ -35,11 +35,6 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
 
   // Handle close with reset
   const handleClose = () => {
-    // Reset calculator if there was a linked client
-    if (linkedClient) {
-      // This will be handled by the parent component (CreditManagement)
-      // The onResetCalculator function will be called
-    }
     onClose();
   };
 
@@ -52,6 +47,10 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     setSearchQuery('');
     setShowAddClient(false);
     setNewClientName(linkedClient?.name || '');
+    // Only reset calculator when X button is pressed
+    if (onResetCalculator) {
+      onResetCalculator();
+    }
     onClose();
   };
 
