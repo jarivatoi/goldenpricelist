@@ -72,8 +72,8 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
   };
 
   const modalContent = (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl h-full overflow-hidden">
         
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
@@ -150,7 +150,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 160px)' }}>
+        <div className="p-6 overflow-y-auto" style={{ height: 'calc(100vh - 200px)' }}>
           
           {/* Summary */}
           <div className="bg-red-50 rounded-lg p-4 mb-6">

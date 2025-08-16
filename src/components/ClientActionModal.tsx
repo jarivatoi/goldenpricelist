@@ -297,8 +297,8 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
   });
 
   const modalContent = (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 overflow-hidden" style={{ height: '100vh' }}>
-      <div className="bg-white rounded-t-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
+      <div className="bg-white rounded-xl w-full max-w-md h-full overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
@@ -324,7 +324,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto" style={{ height: 'calc(100vh - 120px)' }}>
           {!showPartialPayment && !showReturnTab ? (
             // Action Selection
             <div className="space-y-4">
