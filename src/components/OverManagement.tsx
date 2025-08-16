@@ -122,7 +122,7 @@ const OverManagement: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden">
+    <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden select-none">
       
       {/* Add Item Section */}
       <div className="bg-white border-b border-gray-200 shadow-sm p-4">
@@ -152,7 +152,7 @@ const OverManagement: React.FC = () => {
                   setNewItemName(formatted);
                 }}
                 disabled={isSubmitting}
-                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed select-text"
                 placeholder="Enter item name"
                 autoFocus
               />
@@ -196,7 +196,7 @@ const OverManagement: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search items..."
-            className="block w-full pl-10 pr-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="block w-full pl-10 pr-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 select-text"
           />
         </div>
       </div>
