@@ -297,7 +297,7 @@ const ClientActionModal: React.FC<ClientActionModalProps> = ({ client, onClose, 
   });
 
   const modalContent = (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" style={{ height: '100vh' }}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 overflow-hidden" style={{ height: '100vh' }}>
       <div className="bg-white rounded-t-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">

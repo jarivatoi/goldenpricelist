@@ -158,7 +158,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" style={{ height: '100vh' }}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg max-h-[80vh] overflow-hidden">
         
         {/* Header */}
@@ -178,7 +178,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 120px)' }}>
           
           {/* Description Input */}
           <div className="mb-4">
