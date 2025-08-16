@@ -26,13 +26,14 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
   const totalDebt = getClientTotalDebt(client.id);
 
   const handleClose = () => {
-    // Move client to front when modal is closed
+    // Move client to end (rightmost, near calculator) when modal is closed
     moveClientToFront(client.id);
     onClose();
   };
 
   // Also move to front when using the X button or any other close method
   const handleAnyClose = () => {
+    // Move client to end (rightmost, near calculator) when modal is closed
     moveClientToFront(client.id);
     onClose();
   };

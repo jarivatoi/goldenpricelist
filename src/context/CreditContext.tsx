@@ -222,6 +222,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       createdAt: c.createdAt.toISOString(),
       lastTransactionAt: c.lastTransactionAt.toISOString()
     }))));
+    
+    console.log('🔄 Moved client to rightmost position:', clientToMove.name);
   };
   // Delete client
   const deleteClient = async (clientId: string) => {

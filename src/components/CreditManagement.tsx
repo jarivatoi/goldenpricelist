@@ -37,8 +37,8 @@ const CreditManagement: React.FC = () => {
   
   // Sort clients: maintain the order from context (which handles moveClientToFront)
   const sortedClients = [...filteredClients].sort((a, b) => {
-    // Sort by last transaction date (most recent first)
-    return b.lastTransactionAt.getTime() - a.lastTransactionAt.getTime();
+    // Don't sort by date - maintain the order from context to preserve moveClientToFront positioning
+    return 0;
   });
 
   /**
