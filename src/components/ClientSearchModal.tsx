@@ -93,8 +93,10 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     setIsProcessing(true);
     try {
       const newClient = await addClient(newClientName);
+      console.log('New client added:', newClient);
       onAddToClient(newClient, description.trim());
     } catch (error) {
+      console.error('Error adding new client:', error);
       setError(error instanceof Error ? error.message : 'Failed to add client');
       if (error instanceof Error && error.name === 'DuplicateClientError') {
         // Don't close modal on duplicate client error, let user try again
