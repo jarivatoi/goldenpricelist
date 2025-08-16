@@ -482,7 +482,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         >
           {/* Edit Button: Blue background with edit icon */}
           <button 
-            className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors rounded-r-lg"
+            className="w-[75px] bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition-colors"
             onClick={handleEditClick}
           >
             <Edit className="text-white" size={20} />
