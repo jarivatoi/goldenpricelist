@@ -225,19 +225,36 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setIsLoading(true);
         setError(null);
         
-        // Try Supabase first, but fall back to localStorage on any error
+        // Always try localStorage first for PWA reliability
+        console.log('Loading items from localStorage first for PWA');
+        const storedItems = localStorage.getItem('priceListItems');
+        const localItems: PriceItem[] = storedItems ? JSON.parse(storedItems).map((item: any) => ({
+          ...item,
+          grossPrice: item.grossPrice || 0,
+          createdAt: new Date(item.createdAt),
+          lastEditedAt: item.lastEditedAt ? new Date(item.lastEditedAt) : undefined
+        })) : [];
+        
+        setItems(localItems);
+        console.log(`Loaded ${localItems.length} items from localStorage`);
+        
+        // Then try to sync with Supabase in the background
         try {
           if (!supabase) {
-            throw new Error('Supabase not initialized');
+            console.log('Supabase not available, using localStorage only');
+            return;
           }
           
-          // Load from Supabase
+          console.log('Attempting background sync with Supabase...');
           const { data, error } = await supabase
             .from('price_items')
             .select('*')
             .order('created_at', { ascending: false });
           
-          if (error) throw error;
+          if (error) {
+            console.warn('Supabase sync failed, continuing with localStorage:', error);
+            return;
+          }
           
           const priceItems: PriceItem[] = (data || []).map((item: any) => ({
             id: item.id,
@@ -248,7 +265,16 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             lastEditedAt: item.last_edited_at ? new Date(item.last_edited_at) : undefined
           }));
           
-          setItems(priceItems);
+          // Only update if Supabase has different data
+          if (JSON.stringify(priceItems) !== JSON.stringify(localItems)) {
+            setItems(priceItems);
+            // Update localStorage with Supabase data
+            localStorage.setItem('priceListItems', JSON.stringify(priceItems.map(item => ({
+              ...item,
+              createdAt: item.createdAt.toISOString(),
+              lastEditedAt: item.lastEditedAt?.toISOString()
+            }))));
+          }
           console.log(`Loaded ${priceItems.length} items from Supabase`);
           
           // Set up real-time subscription
@@ -292,18 +318,6 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           };
         } catch (supabaseError) {
           console.warn('Supabase failed, falling back to localStorage:', supabaseError);
-          
-          // Fallback to localStorage
-          console.log('Using localStorage for price items');
-          const storedItems = localStorage.getItem('priceListItems');
-          const priceItems: PriceItem[] = storedItems ? JSON.parse(storedItems).map((item: any) => ({
-            ...item,
-            grossPrice: item.grossPrice || 0, // Handle legacy data
-            createdAt: new Date(item.createdAt),
-            lastEditedAt: item.lastEditedAt ? new Date(item.lastEditedAt) : undefined
-          })) : [];
-          setItems(priceItems);
-          console.log(`Loaded ${priceItems.length} items from localStorage`);
         }
       } catch (err) {
         console.error('Failed to load items:', err);

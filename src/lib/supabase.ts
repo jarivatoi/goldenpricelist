@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration - Use environment variables or fallback values
-const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim() || 'https://nmlroqlmtelytoghuyos.supabase.co';
-const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim() || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tbHJvcWxtdGVseXRvZ2h1eW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3NzE5NzQsImV4cCI6MjA1MjM0Nzk3NH0.qJZvxkqL8vGHyJ9mN3pR7sT1uW2xY4zA5bC6dE8fG9h';
+const supabaseUrl = 'https://nmlroqlmtelytoghuyos.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tbHJvcWxtdGVseXRvZ2h1eW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3NzE5NzQsImV4cCI6MjA1MjM0Nzk3NH0.qJZvxkqL8vGHyJ9mN3pR7sT1uW2xY4zA5bC6dE8fG9h';
 
 // Initialize Supabase client with error handling
 let supabase: any = null;
@@ -24,56 +24,12 @@ try {
       },
     },
     global: {
-      fetch: (url, options = {}) => {
-        const controller = new AbortController();
-        // Longer timeout for mobile networks
-        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
-        
-        // Properly handle headers to preserve Content-Type
-        const headers = new Headers();
-        
-        // Copy existing headers if they exist
-        if (options.headers) {
-          if (options.headers instanceof Headers) {
-            options.headers.forEach((value, key) => {
-              headers.set(key, value);
-            });
-          } else if (typeof options.headers === 'object') {
-            Object.entries(options.headers).forEach(([key, value]) => {
-              if (typeof value === 'string') {
-                headers.set(key, value);
-              }
-            });
-          }
-        }
-        
-        // Set required Supabase headers
-        headers.set('apikey', supabaseAnonKey);
-        headers.set('Authorization', `Bearer ${supabaseAnonKey}`);
-        headers.set('Cache-Control', 'no-cache');
-        headers.set('Pragma', 'no-cache');
-        
-        // Ensure Content-Type is set for POST/PUT/PATCH requests
-        if (['POST', 'PUT', 'PATCH'].includes(options.method?.toUpperCase() || 'GET')) {
-          if (!headers.has('Content-Type')) {
-            headers.set('Content-Type', 'application/json');
-          }
-        }
-        
-        return fetch(url, {
-          ...options,
-          signal: controller.signal,
-          headers: headers
-        }).finally(() => {
-          clearTimeout(timeoutId);
-        }).catch(error => {
-          console.error('🌐 Network error (Mobile Safari):', error);
-          if (error.name === 'AbortError') {
-            throw new Error('Request timeout - please check your connection and try again');
-          }
-          throw error;
-        });
-      },
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      }
     },
   });
   console.log('✅ Supabase client initialized for mobile');
