@@ -287,28 +287,11 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd
         </div>
 
         {/* Swipe Indicator */}
-        <div className="mt-2 sm:mt-3 flex items-center justify-between">
-          {/* Quick Add Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onQuickAdd) {
-                onQuickAdd(client);
-              }
-            }}
-            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1"
-          >
-            <Plus size={12} />
-            Add
-          </button>
-          
-          {/* Swipe Indicator */}
+        <div className="mt-2 sm:mt-3 text-center">
           <div className="inline-block w-8 h-1 bg-gray-300 rounded-full"></div>
+          <p className="text-xs text-gray-400 mt-1 hidden sm:block">↑ Actions | Long press for details</p>
+          <p className="text-xs text-gray-400 mt-1 sm:hidden">↑ Actions</p>
         </div>
-        
-        {/* Instructions */}
-        <p className="text-xs text-gray-400 mt-1 text-center hidden sm:block">↑ Actions | Long press for details</p>
-        <p className="text-xs text-gray-400 mt-1 text-center sm:hidden">↑ Actions</p>
       </div>
 
       {/* Details Modal */}
