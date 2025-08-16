@@ -332,7 +332,7 @@ const CreditManagement: React.FC = () => {
                 }`}
                 title={!showAllClients ? 'Show Active Clients Only' : 'Show All Clients'}
               >
-                {!showAllClients ? <Users size={20} /> : <UserCheck size={20} />}
+                {!showAllClients ? <UserCheck size={20} /> : <Users size={20} />}
               </button>
               <button
                 onClick={() => setShowSettings(true)}
