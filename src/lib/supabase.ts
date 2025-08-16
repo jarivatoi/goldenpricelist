@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration - Use environment variables or fallback values
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://cpzxnbhpzsssyhpuhsgh.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwenhuYmhwenNzc3locHVoc2doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxMjExMDMsImV4cCI6MjA2ODY5NzEwM30.xB3KJ6FYeS5U08We1JqgSajutrdJ3vIvbRZVHmxUACc';
+const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim() || 'https://cpzxnbhpzsssyhpuhsgh.supabase.co';
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim() || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwenhuYmhwenNzc3locHVoc2doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxMjExMDMsImV4cCI6MjA2ODY5NzEwM30.xB3KJ6FYeS5U08We1JqgSajutrdJ3vIvbRZVHmxUACc';
 
 // Initialize Supabase client with error handling
 let supabase: any = null;
