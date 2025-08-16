@@ -32,11 +32,8 @@ const CreditManagement: React.FC = () => {
     ? searchClients(searchQuery) // Show all clients when toggled
     : searchClients(searchQuery); // Show all clients by default (including 0.00 amounts)
   
-  // Sort clients: earliest debts on right, latest on left
-  const sortedClients = [...filteredClients]
-    .sort((a, b) => 
-    b.lastTransactionAt.getTime() - a.lastTransactionAt.getTime()
-  );
+  // Sort clients: maintain the order from context (which handles moveClientToFront)
+  const sortedClients = [...filteredClients];
 
   /**
    * CALCULATOR FUNCTIONS
