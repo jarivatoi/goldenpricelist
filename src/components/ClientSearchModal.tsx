@@ -42,6 +42,19 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     }
     onClose();
   };
+
+  const handleXClose = () => {
+    // Reset all state when X button is pressed
+    setDescription('');
+    setDescriptionHistory([]);
+    setPendingNumber('');
+    setError('');
+    setSearchQuery('');
+    setShowAddClient(false);
+    setNewClientName(linkedClient?.name || '');
+    onClose();
+  };
+
   // Reset all state when modal is opened
   React.useEffect(() => {
     console.log('🔄 ClientSearchModal: Resetting state for calculatorValue:', calculatorValue);
@@ -170,7 +183,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
             <p className="text-gray-600">Amount: Rs {calculatorValue}</p>
           </div>
           <button 
-            onClick={onClose}
+            onClick={handleXClose}
             className="text-gray-500 hover:text-gray-700 transition-colors"
           >
             <X size={24} />
