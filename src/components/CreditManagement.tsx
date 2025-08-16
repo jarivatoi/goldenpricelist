@@ -760,6 +760,7 @@ const CreditManagement: React.FC = () => {
           calculatorValue={calculatorValue}
           onClose={() => setShowClientSearch(false)}
           onAddToClient={handleAddToClient}
+          linkedClient={linkedClient}
         />
       )}
     </div>

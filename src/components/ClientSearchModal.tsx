@@ -7,6 +7,7 @@ interface ClientSearchModalProps {
   calculatorValue: string;
   onClose: () => void;
   onAddToClient: (client: Client, description: string) => void;
+  linkedClient?: Client; // Add optional linked client prop
 }
 
 /**
@@ -18,13 +19,14 @@ interface ClientSearchModalProps {
 const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ 
   calculatorValue, 
   onClose, 
-  onAddToClient 
+  onAddToClient,
+  linkedClient
 }) => {
   const { clients, addClient, searchClients } = useCredit();
   const [searchQuery, setSearchQuery] = useState('');
   const [description, setDescription] = useState('');
   const [showAddClient, setShowAddClient] = useState(false);
-  const [newClientName, setNewClientName] = useState('');
+  const [newClientName, setNewClientName] = useState(linkedClient?.name || '');
   const [isProcessing, setIsProcessing] = useState(false);
   const [descriptionHistory, setDescriptionHistory] = useState<string[]>([]);
   const [pendingNumber, setPendingNumber] = useState('');
@@ -39,7 +41,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     setError('');
     setSearchQuery('');
     setShowAddClient(false);
-    setNewClientName('');
+    setNewClientName(linkedClient?.name || '');
   }, [calculatorValue]); // Reset whenever calculatorValue changes (new modal session)
   
   const filteredClients = searchClients(searchQuery).sort((a, b) => 
@@ -60,6 +62,13 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     }
   };
 
+  // If there's a linked client, automatically add to that client
+  React.useEffect(() => {
+    if (linkedClient && description.trim()) {
+      // Auto-add when description is entered for linked client
+      // This could be triggered by a timer or immediate action
+    }
+  }, [linkedClient, description]);
   const handleAddNewClient = async () => {
     if (!newClientName.trim()) {
       alert('Please enter a client name');
@@ -278,6 +287,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
           {!showAddClient ? (
             <>
               {/* Search Bar */}
+              {!linkedClient && (
               <div className="relative mb-4">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Search size={20} className="text-gray-400" />
@@ -290,8 +300,10 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
                   className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
+              )}
 
               {/* Add New Client Button */}
+              {!linkedClient && (
               <button
                 onClick={() => setShowAddClient(true)}
                 className="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition-colors mb-4"
@@ -301,8 +313,31 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
                 </div>
                 <span className="font-medium text-gray-800">Add New Client</span>
               </button>
+              )}
 
+              {/* Linked Client Display */}
+              {linkedClient && (
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-500 p-2 rounded-full">
+                      <User size={16} className="text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-800">{linkedClient.name}</h4>
+                      <p className="text-sm text-gray-600">ID: {linkedClient.id}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleAddToExistingClient(linkedClient)}
+                    disabled={!description.trim()}
+                    className="w-full mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add to {linkedClient.name}
+                  </button>
+                </div>
+              )}
               {/* Client List */}
+              {!linkedClient && (
               <div className="max-h-64 overflow-y-auto">
                 {filteredClients.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
@@ -334,6 +369,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
                   </div>
                 )}
               </div>
+              )}
             </>
           ) : (
             <div>
