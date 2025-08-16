@@ -206,6 +206,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
     const clientToMove = clients.find(c => c.id === clientId);
     if (!clientToMove) return;
     
+    console.log('🔄 Moving client to front:', clientToMove.name);
+    
     const otherClients = clients.filter(c => c.id !== clientId);
     const reorderedClients = [clientToMove, ...otherClients];
     
@@ -217,6 +219,8 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       createdAt: c.createdAt.toISOString(),
       lastTransactionAt: c.lastTransactionAt.toISOString()
     }))));
+    
+    console.log('✅ Client moved to front successfully');
   };
   // Delete client
   const deleteClient = async (clientId: string) => {

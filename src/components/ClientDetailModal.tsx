@@ -27,12 +27,14 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
 
   const handleClose = () => {
     // Move client to front when modal is closed
+    console.log('🔄 ClientDetailModal: Moving client to front on close');
     moveClientToFront(client.id);
     onClose();
   };
 
   // Also move to front when using the X button or any other close method
   const handleAnyClose = () => {
+    console.log('🔄 ClientDetailModal: Moving client to front on any close');
     moveClientToFront(client.id);
     onClose();
   };
