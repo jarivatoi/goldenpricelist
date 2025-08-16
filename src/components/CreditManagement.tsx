@@ -704,17 +704,6 @@ const CreditManagement: React.FC = () => {
                     <li>• ID "{clientToDelete.id}" will be available for new clients</li>
                   </ul>
                 </div>
-                
-                      {searchQuery 
-                        ? `No clients found matching "${searchQuery}"` 
-                        : showAllClients 
-                          ? 'No clients found'
-                          : 'No clients with outstanding debts'
-                      }
-                    </p>
-                  </div>
-                )}
-              </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
