@@ -182,12 +182,6 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
             </h2>
             <p className="text-gray-600">Amount: Rs {calculatorValue}</p>
           </div>
-          <button 
-            onClick={handleXClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            <X size={24} />
-          </button>
         </div>
 
         {/* Content */}
