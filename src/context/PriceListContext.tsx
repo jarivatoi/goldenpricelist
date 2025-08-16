@@ -343,6 +343,8 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
    */
   const addItem = async (name: string, price: number, grossPrice: number) => {
     try {
+      console.log('🔍 Adding item:', { name, price, grossPrice });
+      
       const capitalizedName = capitalizeWords(name);
       const newItem: PriceItem = {
         id: crypto.randomUUID(),
@@ -354,6 +356,14 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       if (supabase) {
         // Add to Supabase
+        console.log('📤 Sending to Supabase:', {
+          id: newItem.id,
+          name: newItem.name,
+          price: newItem.price,
+          gross_price: newItem.grossPrice,
+          created_at: newItem.createdAt.toISOString()
+        });
+        
         const { error } = await supabase
           .from('price_items')
           .insert({
@@ -364,11 +374,14 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             created_at: newItem.createdAt.toISOString()
           });
         
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Supabase error:', error);
+          throw error;
+        }
         
         // Update local state
         setItems(prev => [newItem, ...prev]);
-        console.log('Item added to Supabase successfully:', newItem);
+        console.log('✅ Item added to Supabase successfully:', newItem);
       } else {
         // Fallback to localStorage
         const updatedItems = [newItem, ...items];

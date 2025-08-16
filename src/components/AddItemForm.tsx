@@ -105,6 +105,8 @@ const AddItemForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('🚀 Form submission started:', { name, price, grossPrice });
+    
     // Validate item name
     if (!name.trim()) {
       setError('Please enter an item name');
@@ -139,9 +141,16 @@ const AddItemForm: React.FC = () => {
       setIsSubmitting(true);
       setError('');
       
+      console.log('📝 Calling addItem with:', { 
+        name: name.trim(), 
+        price: Math.round(priceValue * 100) / 100, 
+        grossPrice: Math.round(grossPriceValue * 100) / 100 
+      });
+      
       // Add the item with price rounded to 2 decimal places
       await addItem(name.trim(), Math.round(priceValue * 100) / 100, Math.round(grossPriceValue * 100) / 100);
       
+      console.log('✅ Item added successfully, resetting form');
       // Reset form on successful submission
       setName('');
       setPrice('');
@@ -149,6 +158,7 @@ const AddItemForm: React.FC = () => {
       setIsFormVisible(false);
     } catch (err) {
       // Handle submission errors
+      console.error('❌ Form submission error:', err);
       setError('Failed to add item. Please try again.');
     } finally {
       // Always clear loading state
