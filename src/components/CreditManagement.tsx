@@ -327,7 +327,7 @@ const CreditManagement: React.FC = () => {
           {/* Header with Settings */}
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg lg:text-xl font-semibold text-gray-800">
-              Golden Active Clients (Rs {totalDebtAllClients.toFixed(2)})
+              Golden Active Clients{totalDebtAllClients > 0 ? ` (Rs ${totalDebtAllClients.toFixed(2)})` : ''}
             </h2>
             <div className="flex items-center gap-2">
               <button
