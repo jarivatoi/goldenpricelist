@@ -445,9 +445,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
 
 
 
-export default ClientSearchModal
 
 
-export default ClientSearchModal
 
 export default ClientSearchModal
