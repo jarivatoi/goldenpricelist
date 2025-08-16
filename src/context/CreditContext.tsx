@@ -134,8 +134,13 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Add new client
   const addClient = async (name: string) => {
     try {
-      // Generate a unique ID for the new client
-      const id = name.toLowerCase().replace(/\s+/g, '');
+      // Generate sequential ID in format G001, G002, G003...
+      const existingIds = clients.map(c => c.id).filter(id => id.match(/^G\d{3}$/));
+      const maxNumber = existingIds.length > 0 
+        ? Math.max(...existingIds.map(id => parseInt(id.substring(1))))
+        : 0;
+      const nextNumber = maxNumber + 1;
+      const id = `G${nextNumber.toString().padStart(3, '0')}`;
       
       // Check if client ID already exists
       const existingClient = clients.find(c => c.id === id);
