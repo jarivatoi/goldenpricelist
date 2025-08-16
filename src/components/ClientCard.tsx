@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User, TrendingUp, Calendar } from 'lucide-react';
+import { User, TrendingUp, Calendar, Plus } from 'lucide-react';
 import { Client } from '../types';
 import { useCredit } from '../context/CreditContext';
 import ClientDetailModal from './ClientDetailModal';
