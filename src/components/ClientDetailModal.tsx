@@ -163,12 +163,13 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
               <h3 className="text-lg font-semibold text-gray-800">Items Taken</h3>
             </div>
             
-            {transactions.filter(transaction => transaction.amount > 0).length === 0 ? (
+            {transactions.filter(transaction => transaction.amount >= 0).length === 0 ? (
               <p className="text-gray-500 text-center py-4">No transactions found</p>
             ) : (
               <div className="space-y-3">
                 {transactions
                   .sort((a, b) => b.date.getTime() - a.date.getTime())
+                  .filter(transaction => transaction.amount >= 0) // Show transactions with 0.00 and above
                   .map((transaction) => (
                   <div key={transaction.id} className="bg-gray-50 rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
@@ -177,13 +178,13 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
                         transaction.description.toLowerCase().includes('returned')
                           ? 'text-green-600'
                           : transaction.amount === 0
-                          ? 'text-transparent'
+                          ? 'text-gray-500'
                           : 'text-red-600'
                       }`}>
                         {transaction.description.toLowerCase().includes('returned')
                           ? 'Returned'
                           : transaction.amount === 0
-                          ? ' '
+                          ? 'Rs 0.00'
                           : `Rs ${transaction.amount.toFixed(2)}`
                         }
                       </span>
