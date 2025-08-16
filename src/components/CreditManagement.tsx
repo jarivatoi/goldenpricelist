@@ -704,6 +704,7 @@ const CreditManagement: React.FC = () => {
                     <li>• ID "{clientToDelete.id}" will be available for new clients</li>
                   </ul>
                 </div>
+              </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -882,4 +883,5 @@ const DrinkTypesSettings: React.FC = () => {
     </div>
   );
 };
+
 export default CreditManagement;
