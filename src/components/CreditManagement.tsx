@@ -30,7 +30,7 @@ const CreditManagement: React.FC = () => {
   // Filter clients based on search
   const filteredClients = showAllClients 
     ? searchClients(searchQuery) // Show all clients when toggled
-    : searchClients(searchQuery).filter(client => getClientTotalDebt(client.id) > 0); // Only active debtors
+    : searchClients(searchQuery); // Show all clients by default (including 0.00 amounts)
   
   // Sort clients: earliest debts on right, latest on left
   const sortedClients = [...filteredClients]
@@ -323,13 +323,13 @@ const CreditManagement: React.FC = () => {
               <button
                 onClick={() => setShowAllClients(!showAllClients)}
                 className={`p-2 rounded-lg transition-colors ${
-                  showAllClients 
+                  !showAllClients 
                     ? 'text-blue-600 bg-blue-100 hover:bg-blue-200' 
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                 }`}
-                title={showAllClients ? 'Show Active Clients Only' : 'Show All Clients'}
+                title={!showAllClients ? 'Show Active Clients Only' : 'Show All Clients'}
               >
-                {showAllClients ? <Users size={20} /> : <UserCheck size={20} />}
+                {!showAllClients ? <Users size={20} /> : <UserCheck size={20} />}
               </button>
               <button
                 onClick={() => setShowSettings(true)}
@@ -709,8 +709,8 @@ const CreditManagement: React.FC = () => {
                 </div>
                 
                 {getClientTotalDebt(clientToDelete.id) > 0 && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                    <p className="text-yellow-800 font-medium">
+                        ? (searchQuery ? `No clients found matching "${searchQuery}"` : 'No clients found') 
+                        : (searchQuery ? `No clients found matching "${searchQuery}"` : 'No clients found')
                       ⚠️ Client has outstanding debt: Rs {getClientTotalDebt(clientToDelete.id).toFixed(2)}
                     </p>
                   </div>
