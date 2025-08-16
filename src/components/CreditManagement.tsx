@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, Calculator, Plus, Minus, X, Settings, Trash2, AlertTriangle, Users, UserCheck } from 'lucide-react';
+import { Search, Calculator, Plus, Minus, X, Settings, Trash2, AlertTriangle, Users, UserCheck, Database, Download, Upload } from 'lucide-react';
 import { useCredit } from '../context/CreditContext';
 import ClientCard from './ClientCard';
 import ClientDetailModal from './ClientDetailModal';
@@ -27,6 +27,7 @@ const CreditManagement: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [showDatabaseMenu, setShowDatabaseMenu] = useState(false);
 
   // Filter clients based on search
   const filteredClients = showAllClients 
@@ -290,6 +291,114 @@ const CreditManagement: React.FC = () => {
     }
   };
 
+  // Database export functionality
+  const handleExportDatabase = async () => {
+    try {
+      const now = new Date();
+      const day = now.getDate().toString().padStart(2, '0');
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const year = now.getFullYear();
+      const dateString = `${day}-${month}-${year}`;
+      
+      // Get all data from localStorage
+      const clientsData = localStorage.getItem('creditClients');
+      const transactionsData = localStorage.getItem('creditTransactions');
+      const paymentsData = localStorage.getItem('creditPayments');
+      const priceItemsData = localStorage.getItem('priceListItems');
+      const overItemsData = localStorage.getItem('overItems');
+      
+      const exportData = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        database: {
+          creditClients: clientsData ? JSON.parse(clientsData) : [],
+          creditTransactions: transactionsData ? JSON.parse(transactionsData) : [],
+          creditPayments: paymentsData ? JSON.parse(paymentsData) : [],
+          priceListItems: priceItemsData ? JSON.parse(priceItemsData) : [],
+          overItems: overItemsData ? JSON.parse(overItemsData) : []
+        }
+      };
+      
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `GoldenPricelist_Database_${dateString}.json`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      URL.revokeObjectURL(url);
+      setShowDatabaseMenu(false);
+      alert('Database exported successfully!');
+    } catch (error) {
+      alert('Error exporting database. Please try again.');
+    }
+  };
+
+  // Database import functionality
+  const handleImportDatabase = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const content = e.target?.result as string;
+          const data = JSON.parse(content);
+          
+          if (!data.database) {
+            throw new Error('Invalid database file format');
+          }
+
+          const confirmImport = window.confirm(
+            `This will replace ALL your current data with the imported database. This action cannot be undone. Are you sure you want to continue?`
+          );
+
+          if (confirmImport) {
+            // Import all data to localStorage
+            if (data.database.creditClients) {
+              localStorage.setItem('creditClients', JSON.stringify(data.database.creditClients));
+            }
+            if (data.database.creditTransactions) {
+              localStorage.setItem('creditTransactions', JSON.stringify(data.database.creditTransactions));
+            }
+            if (data.database.creditPayments) {
+              localStorage.setItem('creditPayments', JSON.stringify(data.database.creditPayments));
+            }
+            if (data.database.priceListItems) {
+              localStorage.setItem('priceListItems', JSON.stringify(data.database.priceListItems));
+            }
+            if (data.database.overItems) {
+              localStorage.setItem('overItems', JSON.stringify(data.database.overItems));
+            }
+            
+            setShowDatabaseMenu(false);
+            alert('Database imported successfully! Please refresh the page to see the changes.');
+            
+            // Refresh the page to reload all data
+            window.location.reload();
+          }
+        } catch (error) {
+          alert('Error importing database file. Please check the file format and try again.');
+        }
+      };
+      
+      reader.readAsText(file);
+    };
+    
+    input.click();
+    setShowDatabaseMenu(false);
+  };
+
   // Helper function to safely evaluate calculator value
   const getCalculatorAmount = (): number => {
     try {
@@ -341,6 +450,47 @@ const CreditManagement: React.FC = () => {
               >
                 {!showAllClients ? <UserCheck size={20} /> : <Users size={20} />}
               </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowDatabaseMenu(!showDatabaseMenu)}
+                  className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Database Import/Export"
+                >
+                  <Database size={20} />
+                </button>
+                
+                {/* Database Menu Dropdown */}
+                {showDatabaseMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={handleExportDatabase}
+                        className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
+                      >
+                        <Download size={16} className="mr-3 text-green-600" />
+                        Export Complete Database
+                      </button>
+                      
+                      <button
+                        onClick={handleImportDatabase}
+                        className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
+                      >
+                        <Upload size={16} className="mr-3 text-blue-600" />
+                        Import Complete Database
+                      </button>
+                    </div>
+                    
+                    <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
+                      <div className="text-xs text-gray-500">
+                        <p className="font-medium mb-1">Includes:</p>
+                        <p>• All clients and transactions</p>
+                        <p>• Price list items</p>
+                        <p>• Over/inventory items</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
               <button
                 onClick={() => setShowSettings(true)}
                 className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
