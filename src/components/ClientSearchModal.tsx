@@ -22,7 +22,8 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
   calculatorValue, 
   onClose,
   onAddToClient,
-  linkedClient
+  linkedClient,
+  onResetCalculator
 }) => {
   const { clients, addClient, searchClients } = useCredit();
   const [searchQuery, setSearchQuery] = useState('');
