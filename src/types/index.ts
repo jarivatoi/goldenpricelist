@@ -2,6 +2,7 @@ export interface PriceItem {
   id: string;
   name: string;
   price: number;
+  grossPrice: number;
   createdAt: Date;
   lastEditedAt?: Date;
 }

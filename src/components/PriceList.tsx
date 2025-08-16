@@ -20,9 +20,9 @@ const PriceList: React.FC = () => {
     setEditingItem(item);
   };
   
-  const handleSave = async (id: string, name: string, price: number) => {
+  const handleSave = async (id: string, name: string, price: number, grossPrice: number) => {
     try {
-      await updateItem(id, name, price);
+      await updateItem(id, name, price, grossPrice);
       setEditingItem(null);
     } catch (err) {
       // Error is handled in context

@@ -65,6 +65,7 @@ const AddItemForm: React.FC = () => {
   // Form input state
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const [grossPrice, setGrossPrice] = useState('');
   
   // UI state management
   const [error, setError] = useState('');
@@ -127,17 +128,24 @@ const AddItemForm: React.FC = () => {
       return;
     }
     
+    const grossPriceValue = parseFloat(grossPrice);
+    if (isNaN(grossPriceValue) || grossPriceValue <= 0) {
+      setError('Please enter a valid gross price');
+      return;
+    }
+    
     try {
       // Set loading state to prevent double submission
       setIsSubmitting(true);
       setError('');
       
       // Add the item with price rounded to 2 decimal places
-      await addItem(name.trim(), Math.round(priceValue * 100) / 100);
+      await addItem(name.trim(), Math.round(priceValue * 100) / 100, Math.round(grossPriceValue * 100) / 100);
       
       // Reset form on successful submission
       setName('');
       setPrice('');
+      setGrossPrice('');
       setIsFormVisible(false);
     } catch (err) {
       // Handle submission errors
@@ -211,20 +219,38 @@ const AddItemForm: React.FC = () => {
             
             {/* Item Price Input */}
             <div className="mb-4">
-              <label htmlFor="itemPrice" className="block text-base font-medium text-gray-700 mb-2">
-                Price (Rs)
-              </label>
-              <input
-                id="itemPrice"
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                step="0.01"
-                min="0.01"
-                disabled={isSubmitting}
-                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
-                placeholder="0.00"
-              />
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="itemPrice" className="block text-base font-medium text-gray-700">
+                  Price (Rs)
+                </label>
+                <label htmlFor="grossPrice" className="block text-base font-medium text-gray-700">
+                  Gross Price (Rs)
+                </label>
+              </div>
+              <div className="flex gap-4">
+                <input
+                  id="itemPrice"
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  step="0.01"
+                  min="0.01"
+                  disabled={isSubmitting}
+                  className="flex-1 px-4 py-3 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  placeholder="0.00"
+                />
+                <input
+                  id="grossPrice"
+                  type="number"
+                  value={grossPrice}
+                  onChange={(e) => setGrossPrice(e.target.value)}
+                  step="0.01"
+                  min="0.01"
+                  disabled={isSubmitting}
+                  className="flex-1 px-4 py-3 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  placeholder="0.00"
+                />
+              </div>
             </div>
             
             {/* Error Message Display */}
@@ -249,6 +275,7 @@ const AddItemForm: React.FC = () => {
                   setIsFormVisible(false);
                   setName('');
                   setPrice('');
+                  setGrossPrice('');
                   setError('');
                 }}
                 disabled={isSubmitting}

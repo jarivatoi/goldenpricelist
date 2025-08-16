@@ -13,6 +13,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) 
   const { items } = usePriceList();
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const [grossPrice, setGrossPrice] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,6 +21,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) 
     if (item) {
       setName(item.name);
       setPrice(item.price.toString());
+      setGrossPrice(item.grossPrice.toString());
     }
   }, [item]);
 
@@ -50,12 +52,18 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) 
       return;
     }
     
+    const grossPriceValue = parseFloat(grossPrice);
+    if (isNaN(grossPriceValue) || grossPriceValue <= 0) {
+      setError('Please enter a valid gross price');
+      return;
+    }
+    
     try {
       setIsSubmitting(true);
       setError('');
       
       // Save with price rounded to 2 decimal places
-      await onSave(item.id, name.trim(), Math.round(priceValue * 100) / 100);
+      await onSave(item.id, name.trim(), Math.round(priceValue * 100) / 100, Math.round(grossPriceValue * 100) / 100);
     } catch (err) {
       setError('Failed to update item. Please try again.');
     } finally {
@@ -100,19 +108,36 @@ const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onSave }) 
           </div>
           
           <div className="mb-4">
-            <label htmlFor="editItemPrice" className="block text-sm font-medium text-gray-700 mb-1">
-              Price (Rs)
-            </label>
-            <input
-              id="editItemPrice"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              step="0.01"
-              min="0.01"
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
+            <div className="flex items-center justify-between mb-2">
+              <label htmlFor="editItemPrice" className="block text-sm font-medium text-gray-700">
+                Price (Rs)
+              </label>
+              <label htmlFor="editGrossPrice" className="block text-sm font-medium text-gray-700">
+                Gross Price (Rs)
+              </label>
+            </div>
+            <div className="flex gap-4">
+              <input
+                id="editItemPrice"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                step="0.01"
+                min="0.01"
+                disabled={isSubmitting}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+              <input
+                id="editGrossPrice"
+                type="number"
+                value={grossPrice}
+                onChange={(e) => setGrossPrice(e.target.value)}
+                step="0.01"
+                min="0.01"
+                disabled={isSubmitting}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
           </div>
           
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}

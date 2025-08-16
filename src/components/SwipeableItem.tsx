@@ -566,6 +566,17 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
               >
                 {item.name}
               </div>
+              {/* Gross Price display */}
+              <div 
+                className="text-xs text-gray-500 truncate"
+                style={{ 
+                  fontSize: '11px',
+                  zIndex: 12, // Above main card background
+                  maxWidth: '100%'
+                }}
+              >
+                Gross Price: Rs {item.grossPrice.toFixed(2)}
+              </div>
               {/* Last edited date display */}
               {item.lastEditedAt && (
                 <div 

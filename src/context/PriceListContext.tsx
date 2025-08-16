@@ -59,8 +59,8 @@ import { useAuth } from './AuthContext';
  */
 interface PriceListContextType {
   items: PriceItem[];
-  addItem: (name: string, price: number) => Promise<void>;
-  updateItem: (id: string, name: string, price: number) => Promise<void>;
+  addItem: (name: string, price: number, grossPrice: number) => Promise<void>;
+  updateItem: (id: string, name: string, price: number, grossPrice: number) => Promise<void>;
   deleteItem: (id: string) => Promise<void>;
   importItems: (items: PriceItem[]) => Promise<void>;
   searchItems: (query: string) => PriceItem[];
@@ -238,6 +238,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             id: item.id,
             name: item.name,
             price: item.price,
+            grossPrice: item.gross_price || 0,
             createdAt: new Date(item.created_at),
             lastEditedAt: item.last_edited_at ? new Date(item.last_edited_at) : undefined
           }));
@@ -258,6 +259,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                     id: payload.new.id,
                     name: payload.new.name,
                     price: payload.new.price,
+                    grossPrice: payload.new.gross_price || 0,
                     createdAt: new Date(payload.new.created_at),
                     lastEditedAt: payload.new.last_edited_at ? new Date(payload.new.last_edited_at) : undefined
                   };
@@ -267,6 +269,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                     id: payload.new.id,
                     name: payload.new.name,
                     price: payload.new.price,
+                    grossPrice: payload.new.gross_price || 0,
                     createdAt: new Date(payload.new.created_at),
                     lastEditedAt: payload.new.last_edited_at ? new Date(payload.new.last_edited_at) : undefined
                   };
@@ -288,6 +291,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           const storedItems = localStorage.getItem('priceListItems');
           const priceItems: PriceItem[] = storedItems ? JSON.parse(storedItems).map((item: any) => ({
             ...item,
+            grossPrice: item.grossPrice || 0, // Handle legacy data
             createdAt: new Date(item.createdAt),
             lastEditedAt: item.lastEditedAt ? new Date(item.lastEditedAt) : undefined
           })) : [];
@@ -337,13 +341,14 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
    * @returns Promise<void> - Resolves when item is added
    * @throws Error if database operation fails
    */
-  const addItem = async (name: string, price: number) => {
+  const addItem = async (name: string, price: number, grossPrice: number) => {
     try {
       const capitalizedName = capitalizeWords(name);
       const newItem: PriceItem = {
         id: crypto.randomUUID(),
         name: capitalizedName,
         price,
+        grossPrice,
         createdAt: new Date()
       };
       
@@ -355,6 +360,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             id: newItem.id,
             name: newItem.name,
             price: newItem.price,
+            gross_price: newItem.grossPrice,
             created_at: newItem.createdAt.toISOString()
           });
         
@@ -381,7 +387,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
-  const updateItem = async (id: string, name: string, price: number) => {
+  const updateItem = async (id: string, name: string, price: number, grossPrice: number) => {
     try {
       const capitalizedName = capitalizeWords(name);
       const existingItem = items.find(item => item.id === id);
@@ -393,6 +399,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...existingItem,
         name: capitalizedName,
         price,
+        grossPrice,
         lastEditedAt: new Date()
       };
       
@@ -403,6 +410,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           .update({
             name: updatedItem.name,
             price: updatedItem.price,
+            gross_price: updatedItem.grossPrice,
             last_edited_at: updatedItem.lastEditedAt?.toISOString()
           })
           .eq('id', id);
