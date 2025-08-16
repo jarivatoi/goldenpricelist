@@ -146,7 +146,12 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd
       const remaining = Math.max(0, total - returned);
       if (remaining > 0) {
         // Get the most recent transaction date for this item type
-        const recentTransaction = data.transactions
+        const recentTransaction = clientTransactions
+          .filter(transaction => 
+            transaction.type === 'debt' && 
+            !transaction.description.toLowerCase().includes('returned') &&
+            transaction.description.toLowerCase().includes(itemType.toLowerCase().split(' ')[0])
+          )
           .sort((a, b) => new Date(b.date || Date.now()).getTime() - new Date(a.date || Date.now()).getTime())[0];
         const transactionDate = recentTransaction ? new Date(recentTransaction.date || Date.now()) : new Date();
         const dateStr = transactionDate.toLocaleDateString('en-GB', {
