@@ -235,8 +235,9 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric'
-                        })} {payment.date.toLocaleTimeString('en-GB', {
+                        })} at {payment.date.toLocaleTimeString('en-GB', {
                           hour: '2-digit',
+                          minute: '2-digit',
                           hour12: false
                         })}
                       </span>
