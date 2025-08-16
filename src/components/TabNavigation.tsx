@@ -28,7 +28,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`flex-1 min-w-0 flex items-center justify-center py-3 px-4 text-sm sm:text-base font-medium transition-colors duration-200 whitespace-nowrap animate-tab-pulse ${
+                className={`flex-1 min-w-0 flex items-center justify-center py-3 px-4 text-sm sm:text-base font-medium transition-colors duration-200 whitespace-nowrap ${
                   isActive
                     ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 transform scale-105'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
