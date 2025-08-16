@@ -157,15 +157,19 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         bottlesOwed: { beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 }
       };
 
-      const updatedClients = [...clients, newClient];
-      setClients(updatedClients);
-      
-      // Save to localStorage
-      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
-        ...client,
-        createdAt: client.createdAt.toISOString(),
-        lastTransactionAt: client.lastTransactionAt.toISOString()
-      }))));
+      // Update state first to trigger re-render
+      setClients(prevClients => {
+        const updatedClients = [...prevClients, newClient];
+        
+        // Save to localStorage after state update
+        localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(client => ({
+          ...client,
+          createdAt: client.createdAt.toISOString(),
+          lastTransactionAt: client.lastTransactionAt.toISOString()
+        }))));
+        
+        return updatedClients;
+      });
       
       console.log('Client saved to localStorage, total clients:', updatedClients.length);
       return newClient;
@@ -300,30 +304,42 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         type: 'debt'
       };
       
-      const updatedTransactions = [...transactions, newTransaction];
-      setTransactions(updatedTransactions);
+      // Update transactions state
+      setTransactions(prevTransactions => {
+        const updatedTransactions = [...prevTransactions, newTransaction];
+        
+        // Save to localStorage
+        localStorage.setItem('creditTransactions', JSON.stringify(updatedTransactions.map(transaction => ({
+          ...transaction,
+          date: transaction.date.toISOString()
+        }))));
+        
+        return updatedTransactions;
+      });
       
       // Update client's total debt and last transaction time
-      const updatedClient = {
-        ...client,
-        totalDebt: getClientTotalDebt(client.id) + amount,
-        lastTransactionAt: new Date()
-      };
-      
-      const updatedClients = clients.map(c => c.id === client.id ? updatedClient : c);
-      setClients(updatedClients);
-      
-      // Save to localStorage
-      localStorage.setItem('creditTransactions', JSON.stringify(updatedTransactions.map(transaction => ({
-        ...transaction,
-        date: transaction.date.toISOString()
-      }))));
-      
-      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(c => ({
-        ...c,
-        createdAt: c.createdAt.toISOString(),
-        lastTransactionAt: c.lastTransactionAt.toISOString()
-      }))));
+      // Update clients state
+      setClients(prevClients => {
+        const updatedClients = prevClients.map(c => {
+          if (c.id === client.id) {
+            return {
+              ...c,
+              totalDebt: c.totalDebt + amount,
+              lastTransactionAt: new Date()
+            };
+          }
+          return c;
+        });
+        
+        // Save to localStorage
+        localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(c => ({
+          ...c,
+          createdAt: c.createdAt.toISOString(),
+          lastTransactionAt: c.lastTransactionAt.toISOString()
+        }))));
+        
+        return updatedClients;
+      });
       
       console.log('🏦 CreditContext: Transaction added to localStorage successfully');
       
