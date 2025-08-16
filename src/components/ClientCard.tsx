@@ -422,8 +422,8 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd
               <ScrollingText 
                 text={`Returnable: ${returnableItemsText}`}
                 className="text-orange-600 font-medium"
-                pauseDuration={3}
-                scrollDuration={4}
+                pauseDuration={0.5}
+                scrollDuration={2.5}
                 easing="power1.inOut"
               />
             </div>
