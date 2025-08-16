@@ -449,3 +449,5 @@ export default ClientSearchModal
 
 
 export default ClientSearchModal
+
+export default ClientSearchModal
