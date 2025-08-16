@@ -16,7 +16,7 @@ interface ClientDetailModalProps {
  * Shows detailed breakdown of client's transactions and payments
  */
 const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, onQuickAdd }) => {
-  const { getClientTransactions, getClientPayments, getClientTotalDebt, updateClient } = useCredit();
+  const { getClientTransactions, getClientPayments, getClientTotalDebt, updateClient, moveClientToFront } = useCredit();
   const [isEditingName, setIsEditingName] = React.useState(false);
   const [editedName, setEditedName] = React.useState(client.name);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -25,6 +25,11 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
   const payments = getClientPayments(client.id);
   const totalDebt = getClientTotalDebt(client.id);
 
+  const handleClose = () => {
+    // Move client to front when modal is closed
+    moveClientToFront(client.id);
+    onClose();
+  };
   const handleSaveName = async () => {
     if (!editedName.trim() || editedName.trim() === client.name) {
       setIsEditingName(false);
@@ -115,7 +120,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
               <button
                 onClick={() => {
                   onQuickAdd(client);
-                  onClose(); // Close the modal after quick add
+                  handleClose(); // Close the modal after quick add
                 }}
                 className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition-colors flex items-center gap-2"
                 title={`Add transaction for ${client.name}`}
@@ -127,7 +132,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
             
             {/* Close Button */}
             <button 
-              onClick={onClose}
+              onClick={handleClose}
               className="text-gray-500 hover:text-gray-700 transition-colors"
             >
               <X size={24} />
@@ -243,7 +248,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
               <p className="text-xl font-bold text-red-600">Rs {totalDebt.toFixed(2)}</p>
             </div>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               Close

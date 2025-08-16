@@ -20,6 +20,7 @@ interface CreditContextType {
   
   // Client update operations
   updateClient: (client: Client) => Promise<void>;
+  moveClientToFront: (clientId: string) => void;
   
   // Transaction operations
   addTransaction: (client: Client, description: string, amount: number) => Promise<void>;
@@ -200,6 +201,23 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
     }
   };
 
+  // Move client to front of list (rightmost position near calculator)
+  const moveClientToFront = (clientId: string) => {
+    const clientToMove = clients.find(c => c.id === clientId);
+    if (!clientToMove) return;
+    
+    const otherClients = clients.filter(c => c.id !== clientId);
+    const reorderedClients = [clientToMove, ...otherClients];
+    
+    setClients(reorderedClients);
+    
+    // Save to localStorage
+    localStorage.setItem('creditClients', JSON.stringify(reorderedClients.map(c => ({
+      ...c,
+      createdAt: c.createdAt.toISOString(),
+      lastTransactionAt: c.lastTransactionAt.toISOString()
+    }))));
+  };
   // Delete client
   const deleteClient = async (clientId: string) => {
     try {
@@ -459,6 +477,7 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
     getClientBottlesOwed,
     getClientTransactions,
     getClientPayments,
+    moveClientToFront,
     addTransaction,
     addPartialPayment,
     settleClient,
