@@ -29,17 +29,41 @@ try {
         // Longer timeout for mobile networks
         const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
         
+        // Properly handle headers to preserve Content-Type
+        const headers = new Headers();
+        
+        // Copy existing headers if they exist
+        if (options.headers) {
+          if (options.headers instanceof Headers) {
+            options.headers.forEach((value, key) => {
+              headers.set(key, value);
+            });
+          } else if (typeof options.headers === 'object') {
+            Object.entries(options.headers).forEach(([key, value]) => {
+              if (typeof value === 'string') {
+                headers.set(key, value);
+              }
+            });
+          }
+        }
+        
+        // Set required Supabase headers
+        headers.set('apikey', supabaseAnonKey);
+        headers.set('Authorization', `Bearer ${supabaseAnonKey}`);
+        headers.set('Cache-Control', 'no-cache');
+        headers.set('Pragma', 'no-cache');
+        
+        // Ensure Content-Type is set for POST/PUT/PATCH requests
+        if (['POST', 'PUT', 'PATCH'].includes(options.method?.toUpperCase() || 'GET')) {
+          if (!headers.has('Content-Type')) {
+            headers.set('Content-Type', 'application/json');
+          }
+        }
+        
         return fetch(url, {
           ...options,
           signal: controller.signal,
-          // Mobile Safari specific headers
-          headers: {
-            'apikey': supabaseAnonKey,
-            'Authorization': `Bearer ${supabaseAnonKey}`,
-            ...options.headers,
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
+          headers: headers
         }).finally(() => {
           clearTimeout(timeoutId);
         }).catch(error => {
