@@ -134,6 +134,23 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Add new client
   const addClient = async (name: string) => {
     try {
+      const formattedName = name
+        .trim()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+      
+      // Check for duplicate names (case-insensitive)
+      const existingClient = clients.find(c => 
+        c.name.toLowerCase() === formattedName.toLowerCase()
+      );
+      
+      if (existingClient) {
+        const error = new Error(`Client "${formattedName}" already exists`);
+        error.name = 'DuplicateClientError';
+        throw error;
+      }
+      
       // Generate ID in format G001, G002, G003... reusing deleted IDs
       const existingIds = clients.map(c => c.id).filter(id => id.match(/^G\d{3}$/));
       const existingNumbers = existingIds.map(id => parseInt(id.substring(1))).sort((a, b) => a - b);
@@ -162,7 +179,7 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
         .from('credit_clients')
         .insert({
           id,
-          name,
+          name: formattedName,
           total_debt: 0,
           bottles_owed: JSON.stringify({ beer: 0, guinness: 0, malta: 0, coca: 0, chopines: 0 })
         });
@@ -171,7 +188,7 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
 
       const newClient: Client = {
         id,
-        name,
+        name: formattedName,
         totalDebt: 0,
         createdAt: new Date(),
         lastTransactionAt: new Date(),
