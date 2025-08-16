@@ -500,12 +500,19 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
         {/* Price Text: Initially visible, moves with swipe */}
         <div 
           className="absolute top-0 right-0 h-full flex items-center justify-center font-semibold text-gray-800 whitespace-nowrap rounded-r-lg"
+          // Touch event handlers for swipe interaction (same as main card)
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          // Mouse event handler for desktop interaction (same as main card)
+          onMouseDown={handleMouseDown}
+          // Click handler for position reset
           onClick={revealWidth > 0 ? resetPosition : undefined}
           style={{ 
             // Dynamic width based on price text length
             width: `${formattedPrice.length * 8 + 16}px`,
             fontSize: '16px',
-            zIndex: 8,
+            zIndex: 15, // Higher z-index to ensure it's above main card but below action buttons
             // Move left as buttons are revealed
             transform: `translateX(-${revealWidth}px)`,
             // Smooth transitions when not actively dragging
@@ -514,8 +521,10 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             userSelect: 'none',
             WebkitUserSelect: 'none',
             // Cursor feedback based on state
-            cursor: revealWidth > 0 ? 'pointer' : 'default',
+            cursor: revealWidth > 0 ? 'pointer' : 'grab',
             backgroundColor: '#fef3c7', // Pale golden color (yellow-100)
+            // Touch action for swipe support
+            touchAction: 'pan-y', // Allow vertical scrolling, prevent horizontal
           }}
         >
           {formattedPrice}
@@ -531,7 +540,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
             WebkitUserSelect: 'none',
             touchAction: 'pan-y', // Allow vertical scrolling, prevent horizontal
             backgroundColor: '#fef3c7', // Pale golden color (yellow-100)
-            zIndex: 5,
+            zIndex: 10, // Lower than price but higher than background
           }}
           // Touch event handlers for swipe interaction
           onTouchStart={handleTouchStart}
@@ -551,7 +560,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
                 className="font-semibold text-gray-900 truncate"
                 style={{ 
                   fontSize: '16px',
-                  zIndex: 2,
+                  zIndex: 12, // Above main card background
                   maxWidth: '100%'
                 }}
               >
@@ -563,7 +572,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ item, onEdit, onDelete })
                   className="text-xs text-gray-500 truncate"
                   style={{ 
                     fontSize: '11px',
-                    zIndex: 2,
+                    zIndex: 12, // Above main card background
                     maxWidth: '100%'
                   }}
                 >
