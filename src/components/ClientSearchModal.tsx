@@ -215,7 +215,10 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
               onChange={(e) => {
                 // Auto-capitalize as user types while preserving spacing
                 const value = e.target.value;
-                const formatted = value.replace(/\b\w/g, (char) => char.toUpperCase());
+               // Auto-capitalize first letter of each word and add space after comma
+               let formatted = value.replace(/\b\w/g, (char) => char.toUpperCase());
+               // Add space after comma if not already present
+               formatted = formatted.replace(/,(?!\s)/g, ', ');
                 setDescription(formatted);
               }}
               placeholder="Enter item or service description..."
