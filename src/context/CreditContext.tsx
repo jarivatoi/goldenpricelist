@@ -168,10 +168,10 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
           lastTransactionAt: client.lastTransactionAt.toISOString()
         }))));
         
+        console.log('Client saved to localStorage, total clients:', updatedClients.length);
         return updatedClients;
       });
       
-      console.log('Client saved to localStorage, total clients:', updatedClients.length);
       return newClient;
     } catch (err) {
       // Only log unexpected errors to console, not duplicate client errors
