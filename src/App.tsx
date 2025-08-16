@@ -52,8 +52,17 @@ import SyncStatusIndicator from './components/SyncStatusIndicator';
 import OnDeviceConsole from './components/OnDeviceConsole';
 
 function MainAppContent() {
-  const [activeTab, setActiveTab] = useState<'Over' | 'PriceList' | 'Order' | 'Credit'>('PriceList');
+  const [activeTab, setActiveTab] = useState<'Over' | 'PriceList' | 'Order' | 'Credit'>(() => {
+    const savedTab = localStorage.getItem('activeTab');
+    return (savedTab as 'Over' | 'PriceList' | 'Order' | 'Credit') || 'PriceList';
+  });
   const { signOut } = useAuth();
+
+  // Save active tab to localStorage whenever it changes
+  const handleTabChange = (tab: 'Over' | 'PriceList' | 'Order' | 'Credit') => {
+    setActiveTab(tab);
+    localStorage.setItem('activeTab', tab);
+  };
 
   // Import/Export functionality moved from Header
   const { items, importItems } = usePriceList();
@@ -177,7 +186,7 @@ function MainAppContent() {
       </div>
       
       {/* Tab Navigation: Sticky tabs below header */}
-      <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <TabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       
       {/* Tab Content: Dynamic content based on active tab */}
       <div className="flex-1 w-full">
