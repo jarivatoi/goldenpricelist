@@ -18,7 +18,7 @@ interface ClientSearchModalProps {
  */
 const ClientSearchModal: React.FC<ClientSearchModalProps> = ({ 
   calculatorValue, 
-  onClose, 
+  onClose,
   onAddToClient,
   linkedClient
 }) => {
@@ -32,6 +32,15 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
   const [pendingNumber, setPendingNumber] = useState('');
   const [error, setError] = useState('');
 
+  // Handle close with reset
+  const handleClose = () => {
+    // Reset calculator if there was a linked client
+    if (linkedClient) {
+      // This will be handled by the parent component (CreditManagement)
+      // The onResetCalculator function will be called
+    }
+    onClose();
+  };
   // Reset all state when modal is opened
   React.useEffect(() => {
     console.log('🔄 ClientSearchModal: Resetting state for calculatorValue:', calculatorValue);

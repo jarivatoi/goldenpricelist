@@ -758,7 +758,13 @@ const CreditManagement: React.FC = () => {
         <ClientSearchModal
           key={`search-modal-${Date.now()}`}
           calculatorValue={calculatorValue}
-          onClose={() => setShowClientSearch(false)}
+          onClose={() => {
+            setShowClientSearch(false);
+            // Reset calculator when closing modal
+            if (linkedClient) {
+              handleResetCalculator();
+            }
+          }}
           onAddToClient={handleAddToClient}
           linkedClient={linkedClient}
         />
