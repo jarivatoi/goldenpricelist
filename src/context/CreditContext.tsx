@@ -134,12 +134,20 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   // Add new client
   const addClient = async (name: string) => {
     try {
-      // Generate sequential ID in format G001, G002, G003...
+      // Generate ID in format G001, G002, G003... reusing deleted IDs
       const existingIds = clients.map(c => c.id).filter(id => id.match(/^G\d{3}$/));
-      const maxNumber = existingIds.length > 0 
-        ? Math.max(...existingIds.map(id => parseInt(id.substring(1))))
-        : 0;
-      const nextNumber = maxNumber + 1;
+      const existingNumbers = existingIds.map(id => parseInt(id.substring(1))).sort((a, b) => a - b);
+      
+      // Find the first missing number in the sequence
+      let nextNumber = 1;
+      for (const num of existingNumbers) {
+        if (num === nextNumber) {
+          nextNumber++;
+        } else {
+          break; // Found a gap, use this number
+        }
+      }
+      
       const id = `G${nextNumber.toString().padStart(3, '0')}`;
       
       // Check if client ID already exists
