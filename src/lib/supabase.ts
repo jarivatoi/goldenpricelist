@@ -23,14 +23,6 @@ try {
         eventsPerSecond: 10,
       },
     },
-    global: {
-      headers: {
-        'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      }
-    },
   });
   console.log('✅ Supabase client initialized for mobile');
 } catch (error) {
