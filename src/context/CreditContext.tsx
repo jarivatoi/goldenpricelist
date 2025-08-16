@@ -185,7 +185,7 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       // Move the updated client to the front of the list (rightmost position)
       const updatedClient = updatedClients.find(c => c.id === client.id);
       const otherClients = updatedClients.filter(c => c.id !== client.id);
-      const reorderedClients = updatedClient ? [updatedClient, ...otherClients] : updatedClients;
+      const reorderedClients = updatedClient ? [...otherClients, updatedClient] : updatedClients;
       
       setClients(reorderedClients);
       
@@ -209,7 +209,7 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
     console.log('🔄 Moving client to front:', clientToMove.name);
     
     const otherClients = clients.filter(c => c.id !== clientId);
-    const reorderedClients = [clientToMove, ...otherClients];
+    const reorderedClients = [...otherClients, clientToMove];
     
     setClients(reorderedClients);
     
