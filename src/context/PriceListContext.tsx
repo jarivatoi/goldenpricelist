@@ -354,36 +354,17 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       if (supabase) {
         // Add to Supabase
-        try {
-          const { error } = await supabase
-            .from('price_items')
-            .insert({
-              id: newItem.id,
-              name: newItem.name,
-              price: newItem.price,
-              gross_price: newItem.grossPrice,
-              created_at: newItem.createdAt.toISOString()
-            });
-          
-          if (error) throw error;
-        } catch (insertError: any) {
-          // If gross_price column doesn't exist, try without it
-          if (insertError.message?.includes('gross_price')) {
-            console.warn('gross_price column not found, inserting without it');
-            const { error: fallbackError } = await supabase
-              .from('price_items')
-              .insert({
-                id: newItem.id,
-                name: newItem.name,
-                price: newItem.price,
-                created_at: newItem.createdAt.toISOString()
-              });
-            
-            if (fallbackError) throw fallbackError;
-          } else {
-            throw insertError;
-          }
-        }
+        const { error } = await supabase
+          .from('price_items')
+          .insert({
+            id: newItem.id,
+            name: newItem.name,
+            price: newItem.price,
+            gross_price: newItem.grossPrice,
+            created_at: newItem.createdAt.toISOString()
+          });
+        
+        if (error) throw error;
         
         // Update local state
         setItems(prev => [newItem, ...prev]);
@@ -424,36 +405,17 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       if (supabase) {
         // Update in Supabase
-        try {
-          const { error } = await supabase
-            .from('price_items')
-            .update({
-              name: updatedItem.name,
-              price: updatedItem.price,
-              gross_price: updatedItem.grossPrice,
-              last_edited_at: updatedItem.lastEditedAt?.toISOString()
-            })
-            .eq('id', id);
-          
-          if (error) throw error;
-        } catch (updateError: any) {
-          // If gross_price column doesn't exist, try without it
-          if (updateError.message?.includes('gross_price')) {
-            console.warn('gross_price column not found, updating without it');
-            const { error: fallbackError } = await supabase
-              .from('price_items')
-              .update({
-                name: updatedItem.name,
-                price: updatedItem.price,
-                last_edited_at: updatedItem.lastEditedAt?.toISOString()
-              })
-              .eq('id', id);
-            
-            if (fallbackError) throw fallbackError;
-          } else {
-            throw updateError;
-          }
-        }
+        const { error } = await supabase
+          .from('price_items')
+          .update({
+            name: updatedItem.name,
+            price: updatedItem.price,
+            gross_price: updatedItem.grossPrice,
+            last_edited_at: updatedItem.lastEditedAt?.toISOString()
+          })
+          .eq('id', id);
+        
+        if (error) throw error;
         
         // Update local state
         setItems(prev => prev.map(item => item.id === id ? updatedItem : item));
