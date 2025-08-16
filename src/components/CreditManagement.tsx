@@ -15,6 +15,7 @@ const CreditManagement: React.FC = () => {
   
   // State management
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAllClients, setShowAllClients] = useState(false);
   const [calculatorValue, setCalculatorValue] = useState('0');
   const [calculatorMemory, setCalculatorMemory] = useState(0);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -27,7 +28,9 @@ const CreditManagement: React.FC = () => {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   // Filter clients based on search
-  const filteredClients = searchClients(searchQuery); // Always show all clients
+  const filteredClients = showAllClients 
+    ? searchClients(searchQuery) // Show all clients when toggled
+    : searchClients(searchQuery); // Show all clients by default (including 0.00 amounts)
   
   // Sort clients: maintain the order from context (which handles moveClientToFront)
   const sortedClients = [...filteredClients];
@@ -314,6 +317,17 @@ const CreditManagement: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg lg:text-xl font-semibold text-gray-800">Golden Active Clients</h2>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowAllClients(!showAllClients)}
+                className={`p-2 rounded-lg transition-colors ${
+                  !showAllClients 
+                    ? 'text-blue-600 bg-blue-100 hover:bg-blue-200' 
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+                title={!showAllClients ? 'Show Active Clients Only' : 'Show All Clients'}
+              >
+                {!showAllClients ? <Users size={20} /> : <UserCheck size={20} />}
+              </button>
               <button
                 onClick={() => setShowSettings(true)}
                 className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
@@ -691,7 +705,10 @@ const CreditManagement: React.FC = () => {
                   </ul>
                 </div>
                 
-                      {searchQuery ? `No clients found matching "${searchQuery}"` : 'No clients found'}
+                {getClientTotalDebt(clientToDelete.id) > 0 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                    <p className="text-yellow-800 font-medium">
+                      ⚠️ Client has outstanding debt: Rs {getClientTotalDebt(clientToDelete.id).toFixed(2)}
                     </p>
                   </div>
                 )}
