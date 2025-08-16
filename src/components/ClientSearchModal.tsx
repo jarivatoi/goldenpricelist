@@ -152,7 +152,9 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Add to Client</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              {linkedClient ? `Add to ${linkedClient.name}` : 'Add to Client'}
+            </h2>
             <p className="text-gray-600">Amount: Rs {calculatorValue}</p>
           </div>
           <button 
