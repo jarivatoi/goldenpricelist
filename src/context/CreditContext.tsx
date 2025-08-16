@@ -180,10 +180,16 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
   const updateClient = async (client: Client) => {
     try {
       const updatedClients = clients.map(c => c.id === client.id ? client : c);
-      setClients(updatedClients);
+      
+      // Move the updated client to the front of the list (rightmost position)
+      const updatedClient = updatedClients.find(c => c.id === client.id);
+      const otherClients = updatedClients.filter(c => c.id !== client.id);
+      const reorderedClients = updatedClient ? [updatedClient, ...otherClients] : updatedClients;
+      
+      setClients(reorderedClients);
       
       // Save to localStorage
-      localStorage.setItem('creditClients', JSON.stringify(updatedClients.map(c => ({
+      localStorage.setItem('creditClients', JSON.stringify(reorderedClients.map(c => ({
         ...c,
         createdAt: c.createdAt.toISOString(),
         lastTransactionAt: c.lastTransactionAt.toISOString()
