@@ -30,6 +30,13 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
     moveClientToFront(client.id);
     onClose();
   };
+
+  // Also move to front when using the X button or any other close method
+  const handleAnyClose = () => {
+    moveClientToFront(client.id);
+    onClose();
+  };
+
   const handleSaveName = async () => {
     if (!editedName.trim() || editedName.trim() === client.name) {
       setIsEditingName(false);
@@ -132,7 +139,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
             
             {/* Close Button */}
             <button 
-              onClick={handleClose}
+              onClick={handleAnyClose}
               className="text-gray-500 hover:text-gray-700 transition-colors"
             >
               <X size={24} />
@@ -248,7 +255,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
               <p className="text-xl font-bold text-red-600">Rs {totalDebt.toFixed(2)}</p>
             </div>
             <button
-              onClick={handleClose}
+              onClick={handleAnyClose}
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               Close
