@@ -769,6 +769,7 @@ const CreditManagement: React.FC = () => {
           }}
           onAddToClient={handleAddToClient}
           linkedClient={linkedClient}
+          onResetCalculator={handleResetCalculator}
         />
       )}
     </div>

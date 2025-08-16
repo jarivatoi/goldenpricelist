@@ -9,6 +9,7 @@ interface ClientSearchModalProps {
   onClose: () => void;
   onAddToClient: (client: Client, description: string) => void;
   linkedClient?: Client; // Add optional linked client prop
+  onResetCalculator?: () => void;
 }
 
 /**
