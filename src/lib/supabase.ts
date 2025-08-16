@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration - Use environment variables or fallback values
 const supabaseUrl = 'https://nmlroqlmtelytoghuyos.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tbHJvcWxtdGVseXRvZ2h1eW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3NzE5NzQsImV4cCI6MjA1MjM0Nzk3NH0.qJZvxkqL8vGHyJ9mN3pR7sT1uW2xY4zA5bC6dE8fG9h';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tbHJvcWxtdGVseXRvZ2h1eW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTA0OTgsImV4cCI6MjA3MDY4NjQ5OH0.qnAd6-BSzNMZux6RxtQmGr5OyPYkne--y1ekccVlCeE';
 
 // Initialize Supabase client with error handling
 let supabase: any = null;
