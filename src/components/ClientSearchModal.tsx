@@ -49,10 +49,7 @@ const ClientSearchModal: React.FC<ClientSearchModalProps> = ({
     setSearchQuery('');
     setShowAddClient(false);
     setNewClientName(linkedClient?.name || '');
-    // Only reset calculator when X button is pressed
-    if (onResetCalculator) {
-      onResetCalculator();
-    }
+    // Don't reset calculator when closing modal - preserve linked client
     onClose();
   };
 
