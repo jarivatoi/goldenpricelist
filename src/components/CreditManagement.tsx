@@ -616,8 +616,8 @@ const CreditManagement: React.FC = () => {
       {/* Settings Modal */}
       {showSettings && (
         createPortal(
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md h-full overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden">
             
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
@@ -631,7 +631,7 @@ const CreditManagement: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="p-6 overflow-y-auto" style={{ height: 'calc(100vh - 120px)' }}>
+            <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 120px)' }}>
               <h3 className="text-lg font-medium text-gray-800 mb-4">Manage All Clients</h3>
               <p className="text-sm text-gray-600 mb-4">
                 Here you can permanently delete clients (e.g., if they have passed away). 
@@ -677,8 +677,8 @@ const CreditManagement: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && clientToDelete && (
         createPortal(
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md h-full overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-hidden" style={{ height: '100vh' }}>
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden">
             
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
@@ -701,7 +701,7 @@ const CreditManagement: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="p-6 overflow-y-auto" style={{ height: 'calc(100vh - 120px)' }}>
+            <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 120px)' }}>
               <div className="mb-4">
                 <h3 className="text-lg font-medium text-gray-800 mb-2">
                   {clientToDelete.name} ({clientToDelete.id})
