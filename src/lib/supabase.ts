@@ -54,6 +54,7 @@ export type Database = {
           id: string;
           name: string;
           price: number;
+          gross_price: number;
           created_at: string;
           last_edited_at: string | null;
         };
@@ -61,6 +62,7 @@ export type Database = {
           id?: string;
           name: string;
           price: number;
+          gross_price?: number;
           created_at?: string;
           last_edited_at?: string | null;
         };
@@ -68,6 +70,7 @@ export type Database = {
           id?: string;
           name?: string;
           price?: number;
+          gross_price?: number;
           created_at?: string;
           last_edited_at?: string | null;
         };
