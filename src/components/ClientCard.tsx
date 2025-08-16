@@ -4,6 +4,7 @@ import { Client } from '../types';
 import { useCredit } from '../context/CreditContext';
 import ClientDetailModal from './ClientDetailModal';
 import ClientActionModal from './ClientActionModal';
+import { ScrollingText } from './ScrollingText';
 
 interface ClientCardProps {
   client: Client;
@@ -22,6 +23,136 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd
   const { getClientTotalDebt, getClientBottlesOwed } = useCredit();
   const [showDetails, setShowDetails] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  
+  // Get returnable items for scrolling display
+  const getReturnableItemsText = (): string => {
+    const { getClientTransactions } = useCredit();
+    const clientTransactions = getClientTransactions(client.id);
+    
+    const returnableItems: {[key: string]: number} = {};
+    
+    clientTransactions.forEach(transaction => {
+      // Only process debt transactions (not payments) AND exclude return transactions
+      if (transaction.type === 'payment' || transaction.description.toLowerCase().includes('returned')) {
+        return;
+      }
+      
+      const description = transaction.description.toLowerCase();
+      
+      // Only process items that contain "chopine" or "bouteille"
+      if (!description.includes('chopine') && !description.includes('bouteille')) {
+        return;
+      }
+      
+      // Look for Chopine items
+      const chopinePattern = /(\d+)\s+chopines?(?:\s+([^,]*))?/gi;
+      let chopineMatch;
+      
+      while ((chopineMatch = chopinePattern.exec(description)) !== null) {
+        const quantity = parseInt(chopineMatch[1]);
+        const brand = chopineMatch[2]?.trim() || '';
+        const key = brand ? `Chopine ${brand}` : 'Chopine';
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = 0;
+        }
+        returnableItems[key] += quantity;
+      }
+      
+      // Look for Bouteille items
+      const bouteillePattern = /(\d+)\s+(?:(\d+(?:\.\d+)?L)\s+)?bouteilles?(?:\s+([^,]*))?/gi;
+      let bouteilleMatch;
+      
+      while ((bouteilleMatch = bouteillePattern.exec(description)) !== null) {
+        const quantity = parseInt(bouteilleMatch[1]);
+        const size = bouteilleMatch[2]?.trim() || '';
+        const brand = bouteilleMatch[3]?.trim() || '';
+        
+        let key;
+        if (size && brand) {
+          key = `${size} ${brand}`;
+        } else if (brand) {
+          key = `Bouteille ${brand}`;
+        } else if (size) {
+          key = `${size} Bouteille`;
+        } else {
+          key = 'Bouteille';
+        }
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = 0;
+        }
+        returnableItems[key] += quantity;
+      }
+      
+      // Handle items without explicit numbers (assume quantity 1)
+      if (description.includes('bouteille') && !bouteillePattern.test(description)) {
+        const sizeMatch = description.match(/(\d+(?:\.\d+)?L)/i);
+        const brandMatch = description.match(/bouteilles?\s+([^,]*)/i);
+        const brand = brandMatch?.[1]?.trim() || '';
+        
+        let key;
+        if (sizeMatch && brand) {
+          key = `${sizeMatch[1]} ${brand}`;
+        } else if (brand) {
+          key = `Bouteille ${brand}`;
+        } else if (sizeMatch) {
+          key = `${sizeMatch[1]} Bouteille`;
+        } else {
+          key = 'Bouteille';
+        }
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = 0;
+        }
+        returnableItems[key] += 1;
+      }
+      
+      if (description.includes('chopine') && !chopinePattern.test(description)) {
+        const brandMatch = description.match(/chopines?\s+([^,]*)/i);
+        const brand = brandMatch?.[1]?.trim() || '';
+        const key = brand ? `Chopine ${brand}` : 'Chopine';
+        
+        if (!returnableItems[key]) {
+          returnableItems[key] = 0;
+        }
+        returnableItems[key] += 1;
+      }
+    });
+    
+    // Calculate returned quantities
+    const returnedQuantities: {[key: string]: number} = {};
+    clientTransactions
+      .filter(transaction => transaction.type === 'debt' && transaction.description.toLowerCase().includes('returned'))
+      .forEach(transaction => {
+        const description = transaction.description.toLowerCase();
+        Object.keys(returnableItems).forEach(itemType => {
+          if (description.includes(itemType.toLowerCase())) {
+            const match = description.match(/returned:\s*(\d+)\s+/);
+            if (match) {
+              if (!returnedQuantities[itemType]) {
+                returnedQuantities[itemType] = 0;
+              }
+              returnedQuantities[itemType] += parseInt(match[1]);
+            }
+          }
+        });
+      });
+    
+    // Calculate net returnable quantities
+    const netReturnableItems: string[] = [];
+    Object.entries(returnableItems).forEach(([itemType, total]) => {
+      const returned = returnedQuantities[itemType] || 0;
+      const remaining = Math.max(0, total - returned);
+      if (remaining > 0) {
+        netReturnableItems.push(`${remaining} ${itemType}${remaining > 1 ? 's' : ''}`);
+      }
+    });
+    
+    return netReturnableItems.length > 0 ? netReturnableItems.join(', ') : '';
+  };
+  
+  const returnableItemsText = getReturnableItemsText();
   const [startY, setStartY] = useState(0);
   const [startX, setStartX] = useState(0);
   const [currentY, setCurrentY] = useState(0);
@@ -270,20 +401,34 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, onLongPress, onQuickAdd
           )}
         </div>
 
-        {/* Last Transaction Date */}
-        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
-          <Calendar size={12} className="sm:w-3.5 sm:h-3.5" />
-          <span>
-            {client.lastTransactionAt.toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })} {client.lastTransactionAt.toLocaleTimeString('en-GB', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
-            })}
-          </span>
+        {/* Returnable Items or Last Transaction Date */}
+        <div className="text-xs sm:text-sm text-gray-500">
+          {returnableItemsText ? (
+            <div className="mb-1">
+              <div className="text-orange-600 font-medium mb-1">Returnable:</div>
+              <ScrollingText 
+                text={returnableItemsText}
+                className="text-orange-700"
+                pauseDuration={3}
+                scrollDuration={4}
+                easing="power1.inOut"
+              />
+            </div>
+          ) : null}
+          <div className="flex items-center gap-2">
+            <Calendar size={12} className="sm:w-3.5 sm:h-3.5" />
+            <span>
+              {client.lastTransactionAt.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })} {client.lastTransactionAt.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              })}
+            </span>
+          </div>
         </div>
 
         {/* Swipe Indicator */}
