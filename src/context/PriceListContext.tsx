@@ -225,7 +225,12 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setIsLoading(true);
         setError(null);
         
-        if (supabase) {
+        // Try Supabase first, but fall back to localStorage on any error
+        try {
+          if (!supabase) {
+            throw new Error('Supabase not initialized');
+          }
+          
           // Load from Supabase
           const { data, error } = await supabase
             .from('price_items')
@@ -285,7 +290,9 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           return () => {
             subscription.unsubscribe();
           };
-        } else {
+        } catch (supabaseError) {
+          console.warn('Supabase failed, falling back to localStorage:', supabaseError);
+          
           // Fallback to localStorage
           console.log('Using localStorage for price items');
           const storedItems = localStorage.getItem('priceListItems');
@@ -300,7 +307,7 @@ export const PriceListProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
       } catch (err) {
         console.error('Failed to load items:', err);
-        setError('Failed to load items. Please try again.');
+        setError('Failed to load items. Using offline mode.');
         setItems([]);
       } finally {
         setIsLoading(false);
