@@ -172,7 +172,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, onClose, 
                   .filter(transaction => transaction.amount >= 0) // Show transactions with 0.00 and above
                   .map((transaction) => (
                   <div key={transaction.id} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
+                    <div className={`${transaction.amount > 0 ? 'flex justify-between items-start' : ''} mb-2`}>
                       <h4 className="font-medium text-gray-800">{transaction.description}</h4>
                       {transaction.amount > 0 && (
                         <span className={`text-lg font-semibold ${
