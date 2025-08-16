@@ -457,7 +457,7 @@ const CreditManagement: React.FC = () => {
                         onClick={handleExportDatabase}
                         className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
                       >
-                        <Download size={16} className="mr-3 text-green-600" />
+                        <Upload size={16} className="mr-3 text-green-600" />
                         Export Credit Database
                       </button>
                       
@@ -465,7 +465,7 @@ const CreditManagement: React.FC = () => {
                         onClick={handleImportDatabase}
                         className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
                       >
-                        <Upload size={16} className="mr-3 text-blue-600" />
+                        <Download size={16} className="mr-3 text-blue-600" />
                         Import Credit Database
                       </button>
                     </div>
