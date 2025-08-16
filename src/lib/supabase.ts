@@ -34,6 +34,8 @@ try {
           signal: controller.signal,
           // Mobile Safari specific headers
           headers: {
+            'apikey': supabaseAnonKey,
+            'Authorization': `Bearer ${supabaseAnonKey}`,
             ...options.headers,
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
