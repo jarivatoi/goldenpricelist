@@ -469,15 +469,6 @@ const CreditManagement: React.FC = () => {
                         Import Credit Database
                       </button>
                     </div>
-                    
-                    <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
-                      <div className="text-xs text-gray-500">
-                        <p className="font-medium mb-1">Includes:</p>
-                        <p>• All clients and transactions</p>
-                        <p>• Payment history</p>
-                        <p>• Credit records only</p>
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
