@@ -204,7 +204,10 @@ export const CreditProvider: React.FC<CreditProviderProps> = ({ children }) => {
       
       return newClient;
     } catch (err) {
-      console.error('Error adding client:', err);
+      // Only log unexpected errors to console, not duplicate client errors
+      if (!(err instanceof Error && err.name === 'DuplicateClientError')) {
+        console.error('Error adding client:', err);
+      }
       throw err;
     }
   };
