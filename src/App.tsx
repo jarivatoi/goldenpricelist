@@ -52,7 +52,7 @@ import SyncStatusIndicator from './components/SyncStatusIndicator';
 import OnDeviceConsole from './components/OnDeviceConsole';
 
 function MainAppContent() {
-  const [activeTab, setActiveTab] = useState<'Over' | 'PriceList' | 'Order' | 'Credit'>('Credit');
+  const [activeTab, setActiveTab] = useState<'Over' | 'PriceList' | 'Order' | 'Credit'>('PriceList');
   const { signOut } = useAuth();
 
   // Import/Export functionality moved from Header
